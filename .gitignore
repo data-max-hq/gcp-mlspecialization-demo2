@@ -1,0 +1,38 @@
+# Virtual Environment
+venv
+
+# macOS System files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS Finder folder settings
+__MACOSX/
+
+# Thumbnails
+._*
+
+# Temporary files
+.TemporaryItems
+.Trashes
+.Spotlight-V100
+.DocumentRevisions-V100
+
+# Apple metadata
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Vim swap files
+.*.swp
+
+# macOS background image file
+.background
+
+# macOS-specific file attribute
+.metadata_never_index
+
+# macOS volume information
+.VolumeIcon.icns
+
+# Other files
+.DS_Store?
