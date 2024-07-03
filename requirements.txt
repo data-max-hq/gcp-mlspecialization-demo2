@@ -2,3 +2,4 @@ tfx
 tensorflow
 tensorflow-transform
 apache-beam[gcp]
+kfp

@@ -1,5 +1,4 @@
 from tfx.orchestration.kubeflow.kubeflow_dag_runner import KubeflowDagRunner, KubeflowDagRunnerConfig
-from tfx.orchestration import pipeline
 
 from pipeline_definition import create_pipeline
 
@@ -11,7 +10,6 @@ gcp_project_id = 'indigo-idea-428211-h3'
 gcp_region = 'europe-west3'
 
 runner_config = KubeflowDagRunnerConfig(
-    # kubeflow_metadata_config=metadata.sqlite_metadata_connection_config(metadata_path),
     pipeline_root=pipeline_root
 )
 
