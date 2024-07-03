@@ -1,5 +1,4 @@
-tfx
-tensorflow
-tensorflow-transform
-apache-beam[gcp]
-kfp
+tfx==1.15.0
+tensorflow==2.15
+tensorflow-transform==1.15
+apache-beam[gcp]==2.47.0
