@@ -1,5 +1,4 @@
 from tfx.orchestration import pipeline
-from tfx.orchestration.local.local_dag_runner import LocalDagRunner
 from tfx.orchestration import metadata
 
 from components.data_ingestion import create_example_gen
