@@ -2,7 +2,7 @@ from tfx.components import Evaluator, Pusher
 from tfx.proto import pusher_pb2
 from tfx.proto import evaluator_pb2
 
-def create_evaluator_and_pusher(example_gen, trainer):
+def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
@@ -16,7 +16,7 @@ def create_evaluator_and_pusher(example_gen, trainer):
         model_blessing=evaluator.outputs['blessing'],
         push_destination=pusher_pb2.PushDestination(
             filesystem=pusher_pb2.PushDestination.Filesystem(
-                base_directory='gs://your-bucket/saved_models'
+                base_directory=serving_model_dir
             )
         )
     )

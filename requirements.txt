@@ -2,4 +2,5 @@ tfx
 tensorflow
 tensorflow-transform
 apache-beam[gcp]
-kfp
+"tfx[kfp]<2"
+

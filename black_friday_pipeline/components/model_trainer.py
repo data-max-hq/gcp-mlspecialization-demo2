@@ -1,5 +1,15 @@
 from tfx.components import Trainer
 from tfx.proto import trainer_pb2
+import dotenv
+import os
+
+
+load_dotenv()
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+
+
 
 def run_fn(fn_args):
     import tensorflow as tf
@@ -35,14 +45,15 @@ def run_fn(fn_args):
     model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
     model.save(fn_args.serving_model_dir)
 
-def create_trainer(transform, schema_gen):
+def create_trainer(transform, schema_gen,module_file):
     return Trainer(
-        module_file='path/to/this/script.py',  # Adjust this path
+        module_file=module_file, 
+        # Adjust this path
         custom_config={
             'ai_platform_training_args': {
-                'project': 'your-gcp-project',
-                'region': 'us-central1',
-                'job-dir': 'gs://your-bucket/jobs'
+                'project': GOOGLE_CLOUD_PROJECT,
+                'region': GOOGLE_CLOUD_REGION,
+                'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             }
         },
         transformed_examples=transform.outputs['transformed_examples'],

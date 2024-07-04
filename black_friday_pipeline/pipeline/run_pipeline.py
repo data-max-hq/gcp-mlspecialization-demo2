@@ -1,18 +1,29 @@
-from tfx.orchestration.kubeflow.kubeflow_dag_runner import KubeflowDagRunner, KubeflowDagRunnerConfig
+# from tfx.orchestration.kubeflow.kubeflow_dag_runner import KubeflowDagRunner, KubeflowDagRunnerConfig
+from tfx import v1 as tfx
 
 from pipeline_definition import create_pipeline
+import os
+import dotenv
 
-pipeline_name = 'black_friday_pipeline'
-pipeline_root = 'gs://dataset_bucket_demo2/tfx_pipeline_output'
-data_path = 'gs://dataset_bucket_demo2/dataset/train.csv'
-metadata_path = None
-gcp_project_id = 'indigo-idea-428211-h3'
-gcp_region = 'europe-west3'
 
-runner_config = KubeflowDagRunnerConfig(
-    pipeline_root=pipeline_root
-)
+load_dotenv()
 
-runner = KubeflowDagRunner(config=runner_config)
-pipeline_instance = create_pipeline(pipeline_name, pipeline_root, data_path, metadata_path)
-runner.run(pipeline_instance)
+PIPELINE_NAME = os.getenv("PIPELINE_NAME")
+PIPELINE_ROOT = os.getenv("PIPELINE_ROOT")
+DATA_ROOT = os.getenv("DATA_ROOT")
+MODULE_ROOT = os.getenv("MODULE_ROOT")
+SERVING_MODEL_DIR = os.getenv("SERVING_MODEL_DIR")
+
+PIPELINE_DEFINITION_FILE = PIPELINE_NAME + '_pipeline.json'
+
+runner = tfx.orchestration.experimental.KubeflowV2DagRunner(
+    config=tfx.orchestration.experimental.KubeflowV2DagRunnerConfig(),
+    output_filename=PIPELINE_DEFINITION_FILE)
+
+_ = runner.run(
+    create_pipeline(
+        pipeline_name=PIPELINE_NAME,
+        pipeline_root=PIPELINE_ROOT,
+        data_path=DATA_ROOT,
+        module_file=f'{MODULE_ROOT}/model_trainer.py',
+        serving_model_dir=SERVING_MODEL_DIR))
