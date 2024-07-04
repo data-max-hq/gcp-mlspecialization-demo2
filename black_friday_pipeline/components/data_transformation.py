@@ -15,5 +15,5 @@ def create_transform(example_gen, schema_gen):
     return Transform(
         examples=example_gen.outputs['examples'],
         schema=schema_gen.outputs['schema'],
-        preprocessing_fn=preprocessing_fn
+        module_file="components/data_transformation.py"
     )
