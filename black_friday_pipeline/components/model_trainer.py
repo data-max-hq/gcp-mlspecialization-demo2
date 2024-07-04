@@ -4,7 +4,7 @@ import dotenv
 import os
 
 
-load_dotenv()
+dotenv.load_dotenv()
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")

@@ -6,7 +6,7 @@ import os
 import dotenv
 
 
-load_dotenv()
+dotenv.load_dotenv()
 
 PIPELINE_NAME = os.getenv("PIPELINE_NAME")
 PIPELINE_ROOT = os.getenv("PIPELINE_ROOT")
