@@ -25,5 +25,6 @@ _ = runner.run(
         pipeline_name=PIPELINE_NAME,
         pipeline_root=PIPELINE_ROOT,
         data_path=DATA_ROOT,
+        metadata_path=None,
         module_file=f'{MODULE_ROOT}/model_trainer.py',
         serving_model_dir=SERVING_MODEL_DIR))
