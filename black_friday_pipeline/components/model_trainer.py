@@ -1,14 +1,14 @@
 from tfx.components import Trainer
 from tfx.proto import trainer_pb2
-# from dotenv import load_dotenv
 import os
+import dotenv
+
+dotenv.load_dotenv()
 
 
-GOOGLE_CLOUD_PROJECT = 'indigo-idea-428211-h3'
-GOOGLE_CLOUD_REGION = 'europe-west3'
-GCS_BUCKET_NAME = 'gs://dataset_bucket_demo2'
-
-
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
 def run_fn(fn_args):
     import tensorflow as tf
