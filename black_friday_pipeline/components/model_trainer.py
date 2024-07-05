@@ -42,6 +42,16 @@ def run_fn(fn_args):
     model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
     model.save(fn_args.serving_model_dir)
 
+
+def parse_function(features):
+        # Extract the necessary features
+        feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Product_Category_2","Product_Category_3","Product_ID","Purchase","Stay_In_Current_City_Years","User_ID"]
+        inputs = [features[feature] for feature in feature_columns]
+        # Concatenate inputs into a single tensor
+        concatenated_inputs = tf.concat(inputs, axis=-1)
+        label = features['Purchase']
+        return concatenated_inputs, label
+
 def create_trainer(transform, schema_gen,module_file):
     return Trainer(
         module_file=module_file, 
