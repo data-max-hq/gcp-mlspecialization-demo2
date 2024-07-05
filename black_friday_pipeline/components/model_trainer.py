@@ -12,8 +12,6 @@ GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
 def run_fn(fn_args):
     import tensorflow as tf
-    from tensorflow_transform.tf_metadata import dataset_metadata
-    from tensorflow_transform.tf_metadata import schema_utils
     from tensorflow_transform import TFTransformOutput
 
     tf_transform_output = TFTransformOutput(fn_args.transform_output)
