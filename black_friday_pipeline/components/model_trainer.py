@@ -34,7 +34,7 @@ def run_fn(fn_args):
 
     def parse_function(features, labels):
             # Extract the necessary features
-            feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Product_Category_2","Product_Category_3","Product_ID","Purchase","Stay_In_Current_City_Years","User_ID"]
+            feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Product_Category_2","Product_Category_3","Product_ID","Stay_In_Current_City_Years","User_ID"]
             inputs = [features[feature] for feature in feature_columns]
             # Concatenate inputs into a single tensor
             concatenated_inputs = tf.concat(inputs, axis=-1)
