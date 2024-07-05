@@ -7,8 +7,8 @@ def preprocessing_fn(inputs):
     outputs['Gender'] = tft.compute_and_apply_vocabulary(inputs['Gender'])
     outputs['Age'] = tft.compute_and_apply_vocabulary(inputs['Age'])
     outputs['City_Category'] = tft.compute_and_apply_vocabulary(inputs['City_Category'])
-    outputs['Product_Category_2'] = tft.fill_missing_with_mode(inputs['Product_Category_2'])
-    outputs['Product_Category_3'] = tft.fill_missing_with_mode(inputs['Product_Category_3'])
+    outputs['Product_Category_2'] = tft.compute_and_apply_vocabulary(inputs['Product_Category_2'])
+    outputs['Product_Category_3'] = tft.compute_and_apply_vocabulary(inputs['Product_Category_3'])
     return outputs
 
 def create_transform(example_gen, schema_gen):
