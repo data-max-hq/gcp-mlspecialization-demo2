@@ -9,6 +9,8 @@ def preprocessing_fn(inputs):
     outputs['City_Category'] = tft.compute_and_apply_vocabulary(inputs['City_Category'])
     outputs['Product_Category_2'] = tft.compute_and_apply_vocabulary(inputs['Product_Category_2'])
     outputs['Product_Category_3'] = tft.compute_and_apply_vocabulary(inputs['Product_Category_3'])
+    outputs['Product_ID'] = tft.compute_and_apply_vocabulary(inputs['Product_ID'])
+    outputs['Stay_In_Current_City_Years'] = tft.compute_and_apply_vocabulary(inputs['Stay_In_Current_City_Years'])
     return outputs
 
 def create_transform(example_gen, schema_gen):
