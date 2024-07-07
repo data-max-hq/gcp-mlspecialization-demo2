@@ -45,7 +45,7 @@ def run_fn(fn_args):
     eval_dataset = eval_dataset.map(parse_function)
 
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Dense(128, activation='relu', input_shape=(7,40)),
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(7,)),
         tf.keras.layers.Dense(64, activation='relu'),
         tf.keras.layers.Dense(1)
     ])
