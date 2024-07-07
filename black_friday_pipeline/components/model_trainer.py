@@ -32,17 +32,17 @@ def run_fn(fn_args):
     train_dataset = input_fn(fn_args.train_files, tf_transform_output, 40)
     eval_dataset = input_fn(fn_args.eval_files, tf_transform_output, 40)
 
-    def parse_function(features, labels):
-            # Extract the necessary features
-            feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
-            inputs = [features[feature] for feature in feature_columns]
-            # Concatenate inputs into a single tensor
-            concatenated_inputs = tf.concat(inputs, axis=-1)
-            return concatenated_inputs, labels
+    # def parse_function(features, labels):
+    #         # Extract the necessary features
+    #         feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
+    #         inputs = [features[feature] for feature in feature_columns]
+    #         # Concatenate inputs into a single tensor
+    #         concatenated_inputs = tf.concat(inputs, axis=-1)
+    #         return concatenated_inputs, labels
 
-    # Map the parse function to the datasets
-    train_dataset = train_dataset.map(parse_function)
-    eval_dataset = eval_dataset.map(parse_function)
+    # # Map the parse function to the datasets
+    # train_dataset = train_dataset.map(parse_function)
+    # eval_dataset = eval_dataset.map(parse_function)
 
     model = tf.keras.models.Sequential([
         tf.keras.layers.Dense(128, activation='relu', input_shape=(7,)),
