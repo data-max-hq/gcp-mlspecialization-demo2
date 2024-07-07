@@ -20,6 +20,7 @@ def run_fn(fn_args):
         transformed_feature_spec = (
             tf_transform_output.transformed_feature_spec().copy()
         )
+        print("Transformed feature spec:", transformed_feature_spec)
         dataset = tf.data.experimental.make_batched_features_dataset(
             file_pattern=file_pattern,
             batch_size=batch_size,
@@ -29,8 +30,8 @@ def run_fn(fn_args):
         )
         return dataset
 
-    train_dataset = input_fn(fn_args.train_files, tf_transform_output, 40)
-    eval_dataset = input_fn(fn_args.eval_files, tf_transform_output, 40)
+    train_dataset = input_fn(fn_args.train_files, tf_transform_output)
+    eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
 
     # def parse_function(features, labels):
     #         # Extract the necessary features
@@ -44,11 +45,28 @@ def run_fn(fn_args):
     # train_dataset = train_dataset.map(parse_function)
     # eval_dataset = eval_dataset.map(parse_function)
 
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Dense(128, activation='relu', input_shape=(7,)),
-        tf.keras.layers.Dense(64, activation='relu'),
-        tf.keras.layers.Dense(1)
-    ])
+
+    feature_keys = list(tf_transform_output.transformed_feature_spec().keys())
+
+    # Create input layers for each feature
+    inputs = {key: tf.keras.layers.Input(name=key, shape=(), dtype=tf.float32)
+              for key in feature_keys}
+
+    # Concatenate the inputs into a single tensor
+    concatenated_inputs = tf.keras.layers.concatenate(list(inputs.values()))
+
+    # Define the rest of the model
+    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_inputs)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    output = tf.keras.layers.Dense(1)(x)
+
+    model = tf.keras.Model(inputs=inputs, outputs=output)
+
+    # model = tf.keras.models.Sequential([
+    #     tf.keras.layers.Dense(128, activation='relu', input_shape=(7,)),
+    #     tf.keras.layers.Dense(64, activation='relu'),
+    #     tf.keras.layers.Dense(1)
+    # ])
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
