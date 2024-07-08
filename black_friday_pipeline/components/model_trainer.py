@@ -42,18 +42,18 @@ def run_fn(fn_args):
     feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
 
 
-    def print_dataset_samples(dataset, num_samples=5):
-        print(f"Printing {num_samples} samples from the dataset:")
-        for i, (features, label) in enumerate(dataset.take(num_samples)):
-            print(f"\nSample {i + 1}:")
-            for feature_name, feature_tensor in features.items():
-                if feature_name in feature_columns:
-                    print(f"  {feature_name}: {feature_tensor.numpy()}")
-            print(f"  Label (Purchase): {label.numpy()}")
+    # def print_dataset_samples(dataset, num_samples=5):
+    #     print(f"Printing {num_samples} samples from the dataset:")
+    #     for i, (features, label) in enumerate(dataset.take(num_samples)):
+    #         print(f"\nSample {i + 1}:")
+    #         for feature_name, feature_tensor in features.items():
+    #             if feature_name in feature_columns:
+    #                 print(f"  {feature_name}: {feature_tensor.numpy()}")
+    #         print(f"  Label (Purchase): {label.numpy()}")
 
 
-    print("\nSamples from evaluation dataset:")
-    print_dataset_samples(eval_dataset)
+    # print("\nSamples from evaluation dataset:")
+    # print_dataset_samples(eval_dataset)
 
 
     # def parse_function(features, labels):
