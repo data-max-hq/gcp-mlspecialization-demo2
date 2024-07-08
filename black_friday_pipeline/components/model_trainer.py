@@ -22,11 +22,12 @@ def run_fn(fn_args):
         )
         print("Transformed feature spec:", transformed_feature_spec)
         print("File pattern:", file_pattern)
+
         dataset = tf.data.experimental.make_batched_features_dataset(
             file_pattern=file_pattern,
             batch_size=batch_size,
             features=transformed_feature_spec,
-            reader=tf.data.TFRecordDataset,
+            reader=lambda filenames: tf.data.TFRecordDataset(filenames, compression_type='GZIP'),
             label_key='Purchase'
         )
 
