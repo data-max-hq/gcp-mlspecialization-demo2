@@ -48,15 +48,20 @@ def run_fn(fn_args):
 
     feature_keys = list(tf_transform_output.transformed_feature_spec().keys())
 
-    # Create input layers for each feature
-    inputs = {key: tf.keras.layers.Input(name=key, shape=(), dtype=tf.float32)
-              for key in feature_keys}
+    inputs = {}
+    for key, feature in tf_transform_output.transformed_feature_spec().items():
+        if isinstance(feature, tf.io.FixedLenFeature):
+            inputs[key] = tf.keras.layers.Input(name=key, shape=feature.shape, dtype=feature.dtype)
+        elif isinstance(feature, tf.io.VarLenFeature):
+            inputs[key] = tf.keras.layers.Input(name=key, shape=(None,), dtype=feature.dtype, sparse=True)
+
 
     # Concatenate the inputs into a single tensor
-    concatenated_inputs = tf.keras.layers.concatenate(list(inputs.values()))
+    fixed_inputs = {k: v for k, v in inputs.items() if isinstance(tf_transform_output.transformed_feature_spec()[k], tf.io.FixedLenFeature)}
+    concatenated_fixed_inputs = tf.keras.layers.concatenate(list(fixed_inputs.values()))
 
     # Define the rest of the model
-    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_inputs)
+    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_fixed_inputs)
     x = tf.keras.layers.Dense(64, activation='relu')(x)
     output = tf.keras.layers.Dense(1)(x)
 
