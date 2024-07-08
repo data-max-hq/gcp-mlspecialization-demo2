@@ -28,13 +28,23 @@ def run_fn(fn_args):
             reader=tf.data.TFRecordDataset,
             label_key='Purchase'
         )
-        print(dataset[0])
-        return dataset
+        return dataset, transformed_feature_spec
+
+    def print_dataset_samples(dataset, feature_spec, num_samples=5):
+        print(f"Printing {num_samples} samples from the dataset:")
+        for i, (features, label) in enumerate(dataset.take(num_samples)):
+            print(f"\nSample {i + 1}:")
+            for feature_name, feature_tensor in features.items():
+                if feature_name in feature_columns:
+                    print(f"  {feature_name}: {feature_tensor.numpy()}")
+            print(f"  Label (Purchase): {label.numpy()}")
+
+    eval_dataset, eval_feature_spec = input_fn(fn_args.eval_files, tf_transform_output)
 
     train_dataset = input_fn(fn_args.train_files, tf_transform_output)
     eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
-    print("Train files:", fn_args.train_files)
-    print("Eval files:", fn_args.eval_files)
+    print("\nSamples from evaluation dataset:")
+    print_dataset_samples(eval_dataset, eval_feature_spec)
 
     feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
 
