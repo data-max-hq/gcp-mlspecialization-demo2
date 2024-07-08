@@ -3,6 +3,7 @@ from tfx.components import Transform
 def preprocessing_fn(inputs):
     import tensorflow_transform as tft
     outputs = inputs.copy()
+    outputs['Purchase'] = tft.scale_to_z_score(inputs['Purchase'])
     outputs['Gender'] = tft.compute_and_apply_vocabulary(inputs['Gender'])
     outputs['Age'] = tft.compute_and_apply_vocabulary(inputs['Age'])
     outputs['City_Category'] = tft.compute_and_apply_vocabulary(inputs['City_Category'])

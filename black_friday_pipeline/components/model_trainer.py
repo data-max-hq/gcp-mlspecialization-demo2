@@ -32,10 +32,10 @@ def run_fn(fn_args):
 
     train_dataset = input_fn(fn_args.train_files, tf_transform_output)
     eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
+    feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
 
     # def parse_function(features, labels):
     #         # Extract the necessary features
-    #         feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
     #         inputs = [features[feature] for feature in feature_columns]
     #         # Concatenate inputs into a single tensor
     #         concatenated_inputs = tf.concat(inputs, axis=-1)
@@ -50,29 +50,18 @@ def run_fn(fn_args):
 
     inputs = {}
     for key, feature in tf_transform_output.transformed_feature_spec().items():
-        if isinstance(feature, tf.io.FixedLenFeature):
+        if isinstance(feature, tf.io.FixedLenFeature) and key in feature_columns:
             inputs[key] = tf.keras.layers.Input(name=key, shape=feature.shape, dtype=feature.dtype)
-        elif isinstance(feature, tf.io.VarLenFeature):
+        elif isinstance(feature, tf.io.VarLenFeature) and key in feature_columns:
             inputs[key] = tf.keras.layers.Input(name=key, shape=(None,), dtype=feature.dtype, sparse=True)
-   
-    # Concatenate the fixed-length inputs into a single tensor
+
+
+    # Concatenate the inputs into a single tensor
     fixed_inputs = {k: v for k, v in inputs.items() if isinstance(tf_transform_output.transformed_feature_spec()[k], tf.io.FixedLenFeature)}
     concatenated_fixed_inputs = tf.keras.layers.concatenate(list(fixed_inputs.values()))
 
-    # Convert sparse variable-length inputs to dense tensors
-    varlen_inputs = {k: v for k, v in inputs.items() if isinstance(tf_transform_output.transformed_feature_spec()[k], tf.io.VarLenFeature)}
-    dense_varlen_inputs = [tf.keras.layers.DenseFeatures({key: inputs[key]}) for key in varlen_inputs]
-
-    # Concatenate dense variable-length inputs into a single tensor
-    if dense_varlen_inputs:
-        concatenated_varlen_inputs = tf.keras.layers.concatenate(dense_varlen_inputs)
-        concatenated_inputs = tf.keras.layers.concatenate([concatenated_fixed_inputs, concatenated_varlen_inputs])
-    else:
-        concatenated_inputs = concatenated_fixed_inputs
-
-
     # Define the rest of the model
-    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_inputs)
+    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_fixed_inputs)
     x = tf.keras.layers.Dense(64, activation='relu')(x)
     output = tf.keras.layers.Dense(1)(x)
 
