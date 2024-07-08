@@ -97,9 +97,9 @@ def run_fn(fn_args):
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
-    model.save(fn_args.serving_model_dir, save_format='tf', 
-               signatures={'serving_default': model.call.get_concrete_function(),
-                           'eval': model.call.get_concrete_function()})
+
+    print("Model training completed.Serving model dirL ",fn_args.serving_model_dir)
+    model.save(fn_args.serving_model_dir, save_format='tf')
 
 
 

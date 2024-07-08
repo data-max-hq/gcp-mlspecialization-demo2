@@ -1,6 +1,5 @@
 from tfx.components import Evaluator, Pusher
-from tfx.proto import pusher_pb2
-from tfx.proto import evaluator_pb2
+from tfx.proto import pusher_pb2, evaluator_pb2
 
 def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
