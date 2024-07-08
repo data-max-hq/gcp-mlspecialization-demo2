@@ -28,10 +28,14 @@ def run_fn(fn_args):
             reader=tf.data.TFRecordDataset,
             label_key='Purchase'
         )
+        print(dataset[0])
         return dataset
 
     train_dataset = input_fn(fn_args.train_files, tf_transform_output)
     eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
+    print("Train files:", fn_args.train_files)
+    print("Eval files:", fn_args.eval_files)
+
     feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
 
     # def parse_function(features, labels):
@@ -46,7 +50,7 @@ def run_fn(fn_args):
     # eval_dataset = eval_dataset.map(parse_function)
 
 
-    feature_keys = list(tf_transform_output.transformed_feature_spec().keys())
+    # feature_keys = list(tf_transform_output.transformed_feature_spec().keys())
 
     inputs = {}
     for key, feature in tf_transform_output.transformed_feature_spec().items():
