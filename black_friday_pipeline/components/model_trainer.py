@@ -26,9 +26,12 @@ def run_fn(fn_args):
             file_pattern=file_pattern,
             batch_size=batch_size,
             features=transformed_feature_spec,
-            reader=tf.data.TFRecordDataset(compression_type = 'GZIP'),
+            reader=tf.data.TFRecordDataset,
             label_key='Purchase'
         )
+
+        print("Dataset element spec:", dataset.element_spec)
+
         return dataset
 
     def print_dataset_samples(dataset, num_samples=5):
