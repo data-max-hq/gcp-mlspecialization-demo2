@@ -35,6 +35,13 @@ def run_fn(fn_args):
 
         return dataset
 
+
+    train_dataset = input_fn(fn_args.train_files, tf_transform_output)
+    eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
+
+    feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
+
+
     def print_dataset_samples(dataset, num_samples=5):
         print(f"Printing {num_samples} samples from the dataset:")
         for i, (features, label) in enumerate(dataset.take(num_samples)):
@@ -45,12 +52,9 @@ def run_fn(fn_args):
             print(f"  Label (Purchase): {label.numpy()}")
 
 
-    train_dataset = input_fn(fn_args.train_files, tf_transform_output)
-    eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
     print("\nSamples from evaluation dataset:")
     print_dataset_samples(eval_dataset)
 
-    feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
 
     # def parse_function(features, labels):
     #         # Extract the necessary features
