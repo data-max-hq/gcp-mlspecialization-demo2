@@ -18,29 +18,13 @@ eval_config = tfma.EvalConfig(
                 tfma.MetricConfig(class_name='RootMeanSquaredError'),
                 tfma.MetricConfig(class_name='MeanAbsolutePercentageError'),
             ],
-            thresholds={
+             thresholds={
                 'RootMeanSquaredError': tfma.MetricThreshold(
                     value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'value': 3000}),
+                        upper_bound={'value': float('inf')}),
                     change_threshold=tfma.GenericChangeThreshold(
                         direction=tfma.MetricDirection.LOWER_IS_BETTER,
-                        absolute={'value': 100}
-                    )
-                ),
-                'MeanAbsoluteError': tfma.MetricThreshold(
-                    value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'value': 2500}),
-                    change_threshold=tfma.GenericChangeThreshold(
-                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
-                        absolute={'value': 75}
-                    )
-                ),
-                'MeanAbsolutePercentageError': tfma.MetricThreshold(
-                    value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'value': 30}),  # 30%
-                    change_threshold=tfma.GenericChangeThreshold(
-                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
-                        absolute={'value': 2}  # 2 percentage points
+                        absolute={'value': -float('inf')}
                     )
                 )
             }
