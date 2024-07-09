@@ -1,6 +1,5 @@
 from tfx.components import Evaluator, Pusher
 from tfx.proto import pusher_pb2, evaluator_pb2
-from tfx.proto import model_eval_lib_pb2 as me_proto
 import tensorflow_model_analysis as tfma
 
 
