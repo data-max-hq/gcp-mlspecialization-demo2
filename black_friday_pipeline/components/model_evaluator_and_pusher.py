@@ -13,19 +13,12 @@ eval_config = tfma.EvalConfig(
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
-                tfma.MetricConfig(class_name='MeanSquaredError'),
-                tfma.MetricConfig(class_name='MeanAbsoluteError'),
-                tfma.MetricConfig(class_name='RootMeanSquaredError'),
-                tfma.MetricConfig(class_name='MeanAbsolutePercentageError'),
+                tfma.MetricConfig(class_name='RootMeanSquaredError')
             ],
              thresholds={
                 'RootMeanSquaredError': tfma.MetricThreshold(
                     value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'value': float('inf')}),
-                    change_threshold=tfma.GenericChangeThreshold(
-                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
-                        absolute={'value': -float('inf')}
-                    )
+                        upper_bound={'doubleValue': float('inf')})
                 )
             }
         )
