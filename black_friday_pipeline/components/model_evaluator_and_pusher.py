@@ -1,6 +1,8 @@
 from tfx.components import Evaluator, Pusher
 from tfx.proto import pusher_pb2, evaluator_pb2
+
 import tensorflow_model_analysis as tfma
+from components.data_transformation import preprocessing_fn
 
 
 eval_config = tfma.EvalConfig(
@@ -19,7 +21,7 @@ eval_config = tfma.EvalConfig(
 
 def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
-        examples=example_gen.outputs['examples'],
+        examples=preprocessing_fn(example_gen.outputs['examples']),
         model=trainer.outputs['model'],
         eval_config=eval_config
     )
