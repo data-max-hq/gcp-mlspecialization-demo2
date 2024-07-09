@@ -10,6 +10,10 @@ eval_config = tfma.EvalConfig(
         # remove the label_key. Note, if using a TFLite model, then you must set
         # model_type='tf_lite'.
         tfma.ModelSpec(label_key='Purchase')
+    ],
+    slicing_specs=[
+        # sliced along feature column trip_start_hour.
+        tfma.SlicingSpec(feature_keys=['gender'])
     ])
 
 
@@ -17,9 +21,6 @@ def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
-        feature_slicing_spec=evaluator_pb2.FeatureSlicingSpec(
-            specs=[evaluator_pb2.SingleSlicingSpec(column_for_slicing=['Gender'])]
-        ),
         eval_config=eval_config
     )
 
