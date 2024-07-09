@@ -5,16 +5,48 @@ import tensorflow_model_analysis as tfma
 
 eval_config = tfma.EvalConfig(
     model_specs=[
-        # This assumes a serving model with signature 'serving_default'. If
-        # using estimator based EvalSavedModel, add signature_name='eval' and
-        # remove the label_key. Note, if using a TFLite model, then you must set
-        # model_type='tf_lite'.
         tfma.ModelSpec(label_key='Purchase')
     ],
     slicing_specs=[
-        # sliced along feature column trip_start_hour.
-        tfma.SlicingSpec(feature_keys=['gender'])
-    ])
+        tfma.SlicingSpec(feature_keys=['Gender'])
+    ],
+    metrics_specs=[
+        tfma.MetricsSpec(
+            metrics=[
+                tfma.MetricConfig(class_name='MeanSquaredError'),
+                tfma.MetricConfig(class_name='MeanAbsoluteError'),
+                tfma.MetricConfig(class_name='RootMeanSquaredError'),
+                tfma.MetricConfig(class_name='MeanAbsolutePercentageError'),
+            ],
+            thresholds={
+                'RootMeanSquaredError': tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        upper_bound={'value': 3000}),
+                    change_threshold=tfma.GenericChangeThreshold(
+                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
+                        absolute={'value': 100}
+                    )
+                ),
+                'MeanAbsoluteError': tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        upper_bound={'value': 2500}),
+                    change_threshold=tfma.GenericChangeThreshold(
+                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
+                        absolute={'value': 75}
+                    )
+                ),
+                'MeanAbsolutePercentageError': tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        upper_bound={'value': 30}),  # 30%
+                    change_threshold=tfma.GenericChangeThreshold(
+                        direction=tfma.MetricDirection.LOWER_IS_BETTER,
+                        absolute={'value': 2}  # 2 percentage points
+                    )
+                )
+            }
+        )
+    ]
+)
 
 
 def create_evaluator_and_pusher(transform, trainer, serving_model_dir):
