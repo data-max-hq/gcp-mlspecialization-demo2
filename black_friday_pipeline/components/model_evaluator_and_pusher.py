@@ -18,7 +18,7 @@ eval_config = tfma.EvalConfig(
              thresholds={
                 'RootMeanSquaredError': tfma.MetricThreshold(
                     value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'doubleValue': float('inf')})
+                        upper_bound={'value': float('inf')})
                 )
             }
         )
