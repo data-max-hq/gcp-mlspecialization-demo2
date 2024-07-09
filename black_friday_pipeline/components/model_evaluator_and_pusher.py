@@ -8,7 +8,7 @@ eval_config = tfma.EvalConfig(
         tfma.ModelSpec(label_key='Purchase')
     ],
     slicing_specs=[
-        tfma.SlicingSpec(feature_keys=['Gender'])
+        tfma.SlicingSpec()
     ],
     metrics_specs=[
         tfma.MetricsSpec(
@@ -18,7 +18,7 @@ eval_config = tfma.EvalConfig(
              thresholds={
                 'RootMeanSquaredError': tfma.MetricThreshold(
                     value_threshold=tfma.GenericValueThreshold(
-                        upper_bound={'value': float('inf')})
+                        upper_bound={'value': 1})
                 )
             }
         )
