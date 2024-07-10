@@ -10,10 +10,12 @@ class VertexAIRegisterDeployOutputs(TypedDict):
 
 @component
 def create_register_and_deployer(
-    pushed_model: InputArtifact[PushedModel],
-    project: str,
-    region: str,
+    pushed_model: InputArtifact[PushedModel]
 ) -> VertexAIRegisterDeployOutputs:
+    
+    
+    project = 'indigo-idea-428211-h3'
+    region = 'europe-west3'
 
     aiplatform.init(project=project, location=region)
 

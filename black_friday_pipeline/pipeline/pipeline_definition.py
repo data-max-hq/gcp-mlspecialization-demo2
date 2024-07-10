@@ -16,7 +16,7 @@ def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serv
     transform = create_transform(example_gen, schema_gen)
     trainer = create_trainer(transform, schema_gen, module_file)
     evaluator, pusher = create_evaluator_and_pusher(transform, trainer, serving_model_dir)
-    model_register_and_deployer = create_register_and_deployer(pushed_model=pusher.outputs['pushed_model'],project="indigo-idea-428211-h3",region="europe-west3")
+    model_register_and_deployer = create_register_and_deployer(pushed_model=pusher.outputs['pushed_model'])
 
     return pipeline.Pipeline(
         pipeline_name=pipeline_name,
