@@ -1,7 +1,6 @@
 # File: components/model_registry_and_deployer.py
 from tfx.dsl.component.experimental.decorators import component
 from tfx.types.standard_artifacts import PushedModel
-from tfx.dsl.component.experimental.decorators import InputArtifact
 from google.cloud import aiplatform
 from typing import TypedDict
 
@@ -10,7 +9,7 @@ class VertexAIRegisterDeployOutputs(TypedDict):
 
 @component
 def create_register_and_deployer(
-    pushed_model: InputArtifact[PushedModel]
+    pushed_model: str
 ) -> VertexAIRegisterDeployOutputs:
     
 
@@ -23,7 +22,7 @@ def create_register_and_deployer(
     # Register the model
     model_upload = aiplatform.Model.upload(
         display_name="black_friday_model",
-        artifact_uri=pushed_model.uri,
+        artifact_uri=pushed_model,
         serving_container_image_uri='us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-3:latest',
     )
 
