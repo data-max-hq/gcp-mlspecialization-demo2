@@ -16,7 +16,8 @@ def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serv
     transform = create_transform(example_gen, schema_gen)
     trainer = create_trainer(transform, schema_gen, module_file)
     evaluator, pusher = create_evaluator_and_pusher(transform, trainer, serving_model_dir)
-    model_uri = pusher.outputs['pushed_model'].get().uri
+    print(pusher.outputs['pushed_model'].get())
+    model_uri = pusher.outputs['pushed_model'].get()[0].uri
     model_register_and_deployer = create_register_and_deployer(model_uri)
 
     return pipeline.Pipeline(
