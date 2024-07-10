@@ -1,5 +1,5 @@
 from typing import Any, Dict, TypedDict
-from tfx.dsl.component.experimental.decorators import component
+from tfx.v1.dsl.components import component
 from tfx.types.standard_artifacts import PushedModel
 from tfx.v1.dsl.components import InputArtifact, OutputArtifact
 from google.cloud import aiplatform
