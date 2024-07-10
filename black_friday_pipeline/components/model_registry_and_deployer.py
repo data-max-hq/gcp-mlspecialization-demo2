@@ -8,7 +8,7 @@ from typing import TypedDict
 class VertexAIRegisterDeployOutputs(TypedDict):
     test: str
 
-@component(use_beam=True)
+@component
 def create_register_and_deployer(
     pushed_model: InputArtifact[PushedModel]
 ) -> VertexAIRegisterDeployOutputs:
