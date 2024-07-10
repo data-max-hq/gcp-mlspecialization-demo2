@@ -3,7 +3,11 @@ from tfx.dsl.component.experimental.decorators import component
 from google.cloud import aiplatform
 
 @component
-def create_register_and_deployer(pusher,project,region):
+def create_register_and_deployer(
+    pusher: str,
+    project: str,
+    region: str,
+) -> dict:
 
     aiplatform.init(project=project, location=region)
 
