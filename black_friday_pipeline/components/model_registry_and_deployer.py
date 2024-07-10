@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, TypedDict
 from tfx.dsl.component.experimental.decorators import component
 from google.cloud import aiplatform
 
