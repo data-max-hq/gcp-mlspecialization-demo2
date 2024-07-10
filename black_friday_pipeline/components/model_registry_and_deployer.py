@@ -1,6 +1,6 @@
 from typing import Any, Dict, TypedDict
 from tfx.dsl.component.experimental.decorators import component
-from tfx.dsl.components.base.base_component import BaseComponent
+from tfx.types.standard_artifacts import PushedModel
 from google.cloud import aiplatform
 
 class VertexAIRegisterDeployOutputs(TypedDict):
@@ -9,7 +9,7 @@ class VertexAIRegisterDeployOutputs(TypedDict):
 
 @component
 def create_register_and_deployer(
-    pusher: BaseComponent,
+    pushed_model: PushedModel,
     project: str,
     region: str,
 ) -> VertexAIRegisterDeployOutputs:
@@ -19,7 +19,7 @@ def create_register_and_deployer(
     # Register the model
     model_upload = aiplatform.Model.upload(
         display_name="black_friday_model",
-        artifact_uri=pusher.outputs['pushed_model'].get()[0].uri,
+        artifact_uri=pushed_model.uri,
         serving_container_image_uri='us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-3:latest',
     )
 
