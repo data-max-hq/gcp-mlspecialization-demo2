@@ -6,7 +6,7 @@ from google.cloud import aiplatform
 from typing import TypedDict
 
 class VertexAIRegisterDeployOutputs(TypedDict):
-    test: string
+    test: str
 
 @component(use_beam=True)
 def create_register_and_deployer(
