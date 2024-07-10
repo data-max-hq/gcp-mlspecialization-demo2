@@ -2,12 +2,16 @@ from typing import Any, Dict, Optional
 from tfx.dsl.component.experimental.decorators import component
 from google.cloud import aiplatform
 
+class VertexAIRegisterDeployOutputs(TypedDict):
+    pass
+
+
 @component
 def create_register_and_deployer(
     pusher: str,
     project: str,
     region: str,
-) -> dict:
+) -> VertexAIRegisterDeployOutputs:
 
     aiplatform.init(project=project, location=region)
 
