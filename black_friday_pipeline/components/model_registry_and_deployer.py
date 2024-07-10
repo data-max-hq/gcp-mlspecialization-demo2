@@ -1,19 +1,20 @@
-from typing import Any, Dict, TypedDict
+# File: components/model_registry_and_deployer.py
 from tfx.v1.dsl.components import component
 from tfx.types.standard_artifacts import PushedModel
-from tfx.v1.dsl.components import InputArtifact, OutputArtifact
+from tfx.v1.dsl.components import InputArtifact
 from google.cloud import aiplatform
+from typing import TypedDict
 
 class VertexAIRegisterDeployOutputs(TypedDict):
-    pass
+    test: string
 
-
-@component
+@component(use_beam=True)
 def create_register_and_deployer(
     pushed_model: InputArtifact[PushedModel]
 ) -> VertexAIRegisterDeployOutputs:
     
-    
+
+    print("Registering and deploying the model to Vertex AI. CHECK TEST")
     project = 'indigo-idea-428211-h3'
     region = 'europe-west3'
 
@@ -36,4 +37,6 @@ def create_register_and_deployer(
     # Deploy the model to the endpoint
     model_upload.deploy(endpoint=endpoint)
 
-    return {}
+    return {
+        'test': 'Success'
+    }
