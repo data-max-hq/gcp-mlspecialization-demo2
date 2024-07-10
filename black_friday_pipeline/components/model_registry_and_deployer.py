@@ -1,7 +1,5 @@
 from typing import Any, Dict, Optional
 from tfx.dsl.component.experimental.decorators import component
-from tfx.dsl.component.experimental.decorators import OutputDict
-from tfx.types.standard_artifacts import Model
 from google.cloud import aiplatform
 
 @component
@@ -9,7 +7,7 @@ def create_register_and_deployer(
     pusher,
     project: str,
     region: str,
-) -> OutputDict:
+) -> dict:
 
     aiplatform.init(project=project, location=region)
 
