@@ -1,7 +1,7 @@
 from typing import Any, Dict, TypedDict
 from tfx.dsl.component.experimental.decorators import component
 from tfx.types.standard_artifacts import PushedModel
-from tfx.v1.dsl.components import OutputArtifact
+from tfx.v1.dsl.components import InputArtifact, OutputArtifact
 from google.cloud import aiplatform
 
 class VertexAIRegisterDeployOutputs(TypedDict):
@@ -10,7 +10,7 @@ class VertexAIRegisterDeployOutputs(TypedDict):
 
 @component
 def create_register_and_deployer(
-    pushed_model: OutputArtifact[PushedModel],
+    pushed_model: InputArtifact[PushedModel],
     project: str,
     region: str,
 ) -> VertexAIRegisterDeployOutputs:
