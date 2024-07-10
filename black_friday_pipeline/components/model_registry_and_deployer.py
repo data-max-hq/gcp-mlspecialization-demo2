@@ -1,7 +1,7 @@
 # File: components/model_registry_and_deployer.py
-from tfx.v1.dsl.components import component
+from tfx.dsl.component.experimental.decorators import component
 from tfx.types.standard_artifacts import PushedModel
-from tfx.v1.dsl.components import InputArtifact
+from tfx.dsl.component.experimental.decorators import InputArtifact
 from google.cloud import aiplatform
 from typing import TypedDict
 
