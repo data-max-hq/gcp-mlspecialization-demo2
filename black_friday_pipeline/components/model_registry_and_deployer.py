@@ -8,12 +8,11 @@ class VertexAIRegisterDeployOutputs(TypedDict):
     test: str
 
 @component
-def create_register_and_deployer(
-    pushed_model: str
-) -> VertexAIRegisterDeployOutputs:
+def create_register_and_deployer() -> VertexAIRegisterDeployOutputs:
     
 
     print("Registering and deploying the model to Vertex AI. CHECK TEST")
+    pushed_model = "gs://dataset_bucket_demo2/serving_model/black_friday_pipeline/1720540282"
     project = 'indigo-idea-428211-h3'
     region = 'europe-west3'
 
