@@ -94,7 +94,7 @@ def _build_keras_model() -> tf.keras.Model:
     x = tf.keras.layers.Dense(64, activation='relu')(reshaped_inputs)
     x = tf.keras.layers.Dense(32, activation='relu')(x)
     # Output layer for regression
-    outputs = tf.layers.Dense(1)(x)
+    outputs = tf.keras.layers.Dense(1)(x)
     
     model = tf.keras.Model(inputs=inputs, outputs=outputs)
     model.compile(
