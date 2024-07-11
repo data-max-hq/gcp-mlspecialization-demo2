@@ -128,6 +128,15 @@ def run_fn(fn_args):
        'serving_default': _get_serve_tf_examples_fn(model, tf_transform_output),
    }
    model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
+   model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
+   print("Model saved at:", fn_args.serving_model_dir)
+
+   # Debug: Load the model back and check the transformation layer
+   loaded_model = tf.keras.models.load_model(fn_args.serving_model_dir)
+   if hasattr(loaded_model, 'tft_layer'):
+    print("Transformation layer is present in the loaded model")
+   else:
+    print("Transformation layer is NOT present in the loaded model")
 
 
 def create_trainer(transform, schema_gen,module_file):
