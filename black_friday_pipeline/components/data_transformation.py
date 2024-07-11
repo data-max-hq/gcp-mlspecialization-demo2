@@ -40,6 +40,7 @@ def create_transform(example_gen, schema_gen):
         schema=schema_gen.outputs['schema'],
         module_file="components/data_transformation.py",
         splits_config=transform_pb2.SplitsConfig(
+            analyze=['train'],
             transform=['train', 'eval']
         )
     )
