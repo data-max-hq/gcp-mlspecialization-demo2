@@ -20,9 +20,10 @@ eval_config = tfma.EvalConfig(
 
 def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
-        examples=example_gen.test.outputs['examples'],
+        examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
-        eval_config=eval_config
+        eval_config=eval_config,
+        split_config=evaluator_pb2.SplitConfig(splits=["test"])
     )
 
     pusher = Pusher(
