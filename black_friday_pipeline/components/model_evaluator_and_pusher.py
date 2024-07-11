@@ -18,9 +18,9 @@ eval_config = tfma.EvalConfig(
         )
 
 
-def create_evaluator_and_pusher(transform, trainer, serving_model_dir):
+def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
-        examples=transform.outputs['transformed_examples'],
+        examples=example_gen.test.outputs['examples'],
         model=trainer.outputs['model'],
         eval_config=eval_config
     )
