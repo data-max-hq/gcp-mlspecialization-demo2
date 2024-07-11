@@ -28,32 +28,27 @@ def _apply_preprocessing(raw_features, tft_layer):
 
 
 def _get_serve_tf_examples_fn(model, tf_transform_output):
-  # We must save the tft_layer to the model to ensure its assets are kept and
-  # tracked.
-  model.tft_layer = tf_transform_output.transform_features_layer()
+    # Attach the transformation layer to the model
+    model.tft_layer = tf_transform_output.transform_features_layer()
+    print("Model tft layer:", model.tft_layer)
 
-  @tf.function(input_signature=[
-      tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
-  ])
-  def serve_tf_examples_fn(serialized_tf_examples):
-    # Expected input is a string which is serialized tf.Example format.
-    feature_spec = tf_transform_output.raw_feature_spec()
-    # Because input schema includes unnecessary fields like 'species' and
-    # 'island', we filter feature_spec to include required keys only.
-    required_feature_spec = {
-        k: v for k, v in feature_spec.items() if k in _FEATURE_KEYS
-    }
-    parsed_features = tf.io.parse_example(serialized_tf_examples,
-                                          required_feature_spec)
+    @tf.function(input_signature=[
+        tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
+    ])
+    def serve_tf_examples_fn(serialized_tf_examples):
+        # Parse the serialized tf.Examples
+        feature_spec = tf_transform_output.raw_feature_spec()
+        required_feature_spec = {
+            k: v for k, v in feature_spec.items() if k in _FEATURE_KEYS
+        }
+        parsed_features = tf.io.parse_example(serialized_tf_examples,
+                                              required_feature_spec)
+        # Apply the transformations
+        transformed_features, _ = _apply_preprocessing(parsed_features, model.tft_layer)
+        # Get the model predictions
+        return model(transformed_features)
 
-    # Preprocess parsed input with transform operation defined in
-    # preprocessing_fn().
-    transformed_features, _ = _apply_preprocessing(parsed_features,
-                                                   model.tft_layer)
-    # Run inference with ML model.
-    return model(transformed_features)
-
-  return serve_tf_examples_fn
+    return serve_tf_examples_fn
 
 def input_fn(file_pattern, tf_transform_output, batch_size=200):
         transformed_feature_spec = (
@@ -69,7 +64,6 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
             reader=lambda filenames: tf.data.TFRecordDataset(filenames, compression_type='GZIP'),
             label_key='Purchase'
         )
-
         print("Dataset element spec:", dataset.element_spec)
 
         return dataset
@@ -107,22 +101,34 @@ def _build_keras_model() -> tf.keras.Model:
     return model
 
 def run_fn(fn_args):
+   """Train the model based on given args.
 
-    tf_transform_output = TFTransformOutput(fn_args.transform_output)
+   Args:
+       fn_args: Holds args used to train the model as name/value pairs.
+   """
+   tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
-    train_dataset = input_fn(fn_args.train_files, tf_transform_output)
-    eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
+   train_dataset = input_fn(
+       fn_args.train_files,
+       fn_args.data_accessor,
+       tf_transform_output)
+   eval_dataset = input_fn(
+       fn_args.eval_files,
+       fn_args.data_accessor,
+       tf_transform_output)
 
-    model = _build_keras_model()
+   model = _build_keras_model()
+   model.fit(
+       train_dataset,
+       steps_per_epoch=fn_args.train_steps,
+       validation_data=eval_dataset,
+       validation_steps=fn_args.eval_steps)
 
-    model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
-
-    print("Model training completed.Serving model dirL ",fn_args.serving_model_dir)
-    signatures = {
-      'serving_default': _get_serve_tf_examples_fn(model, tf_transform_output),
-    }
-    model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
-
+   # Ensure the transformation layer is saved with the model
+   signatures = {
+       'serving_default': _get_serve_tf_examples_fn(model, tf_transform_output),
+   }
+   model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
 
 
 def create_trainer(transform, schema_gen,module_file):
@@ -142,3 +148,5 @@ def create_trainer(transform, schema_gen,module_file):
         train_args=trainer_pb2.TrainArgs(num_steps=1000),
         eval_args=trainer_pb2.EvalArgs(num_steps=200)
     )
+
+
