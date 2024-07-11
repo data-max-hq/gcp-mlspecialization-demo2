@@ -1,5 +1,8 @@
 from tfx.components import Trainer
 from tfx.proto import trainer_pb2
+import tensorflow as tf
+from tensorflow_transform import TFTransformOutput
+from absl import logging
 import os
 import dotenv
 
@@ -10,13 +13,49 @@ GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
-def run_fn(fn_args):
-    import tensorflow as tf
-    from tensorflow_transform import TFTransformOutput
+_LABEL_KEY = 'Purchase'
+_FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 
-    tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
-    def input_fn(file_pattern, tf_transform_output, batch_size=200):
+
+def _apply_preprocessing(raw_features, tft_layer):
+  transformed_features = tft_layer(raw_features)
+  if _LABEL_KEY in raw_features:
+    transformed_label = transformed_features.pop(_LABEL_KEY)
+    return transformed_features, transformed_label
+  else:
+    return transformed_features, None
+
+
+def _get_serve_tf_examples_fn(model, tf_transform_output):
+  # We must save the tft_layer to the model to ensure its assets are kept and
+  # tracked.
+  model.tft_layer = tf_transform_output.transform_features_layer()
+
+  @tf.function(input_signature=[
+      tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
+  ])
+  def serve_tf_examples_fn(serialized_tf_examples):
+    # Expected input is a string which is serialized tf.Example format.
+    feature_spec = tf_transform_output.raw_feature_spec()
+    # Because input schema includes unnecessary fields like 'species' and
+    # 'island', we filter feature_spec to include required keys only.
+    required_feature_spec = {
+        k: v for k, v in feature_spec.items() if k in _FEATURE_KEYS
+    }
+    parsed_features = tf.io.parse_example(serialized_tf_examples,
+                                          required_feature_spec)
+
+    # Preprocess parsed input with transform operation defined in
+    # preprocessing_fn().
+    transformed_features, _ = _apply_preprocessing(parsed_features,
+                                                   model.tft_layer)
+    # Run inference with ML model.
+    return model(transformed_features)
+
+  return serve_tf_examples_fn
+
+def input_fn(file_pattern, tf_transform_output, batch_size=200):
         transformed_feature_spec = (
             tf_transform_output.transformed_feature_spec().copy()
         )
@@ -35,71 +74,60 @@ def run_fn(fn_args):
 
         return dataset
 
+def _build_keras_model() -> tf.keras.Model:
+    """Creates a CNN Keras model for predicting purchase amount in Black Friday data.
+
+    Returns:
+        A Keras Model.
+    """
+    inputs = [
+        tf.keras.layers.Input(shape=(1,), name=key)
+        for key in _FEATURE_KEYS
+    ]
+    
+    # Concatenate inputs to create a single input tensor
+    concatenated_inputs = tf.layers.concatenate(inputs)
+    
+    # Reshape the inputs to a suitable shape for CNN
+    reshaped_inputs = tf.layers.Reshape((len(_FEATURE_KEYS), 1, 1))(concatenated_inputs)
+    
+    # Convolutional layers
+    x = tf.layers.Conv2D(16, (2, 2), activation='relu')(reshaped_inputs)
+    x = tf.layers.Conv2D(32, (2, 2), activation='relu')(x)
+    x = tf.layers.Flatten()(x)
+    
+    # Fully connected layer
+    x = tf.layers.Dense(64, activation='relu')(x)
+    
+    # Output layer for regression
+    outputs = tf.layers.Dense(1)(x)
+    
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(1e-2),
+        loss='mean_squared_error',  # Using MSE for regression
+        metrics=['mean_absolute_error']  # MAE as an additional metric
+    )
+    
+    model.summary(print_fn=logging.info)
+    return model
+
+def run_fn(fn_args):
+
+    tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
     train_dataset = input_fn(fn_args.train_files, tf_transform_output)
     eval_dataset = input_fn(fn_args.eval_files, tf_transform_output)
 
-    feature_columns = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1","Stay_In_Current_City_Years"]
-
-
-    # def print_dataset_samples(dataset, num_samples=5):
-    #     print(f"Printing {num_samples} samples from the dataset:")
-    #     for i, (features, label) in enumerate(dataset.take(num_samples)):
-    #         print(f"\nSample {i + 1}:")
-    #         for feature_name, feature_tensor in features.items():
-    #             if feature_name in feature_columns:
-    #                 print(f"  {feature_name}: {feature_tensor.numpy()}")
-    #         print(f"  Label (Purchase): {label.numpy()}")
-
-
-    # print("\nSamples from evaluation dataset:")
-    # print_dataset_samples(eval_dataset)
-
-
-    # def parse_function(features, labels):
-    #         # Extract the necessary features
-    #         inputs = [features[feature] for feature in feature_columns]
-    #         # Concatenate inputs into a single tensor
-    #         concatenated_inputs = tf.concat(inputs, axis=-1)
-    #         return concatenated_inputs, labels
-
-    # # Map the parse function to the datasets
-    # train_dataset = train_dataset.map(parse_function)
-    # eval_dataset = eval_dataset.map(parse_function)
-
-
-    # feature_keys = list(tf_transform_output.transformed_feature_spec().keys())
-
-    inputs = {}
-    for key, feature in tf_transform_output.transformed_feature_spec().items():
-        if isinstance(feature, tf.io.FixedLenFeature) and key in feature_columns:
-            inputs[key] = tf.keras.layers.Input(name=key, shape=feature.shape, dtype=feature.dtype)
-        elif isinstance(feature, tf.io.VarLenFeature) and key in feature_columns:
-            inputs[key] = tf.keras.layers.Input(name=key, shape=(None,), dtype=feature.dtype, sparse=True)
-
-
-    # Concatenate the inputs into a single tensor
-    fixed_inputs = {k: v for k, v in inputs.items() if isinstance(tf_transform_output.transformed_feature_spec()[k], tf.io.FixedLenFeature)}
-    concatenated_fixed_inputs = tf.keras.layers.concatenate(list(fixed_inputs.values()))
-
-    # Define the rest of the model
-    x = tf.keras.layers.Dense(128, activation='relu')(concatenated_fixed_inputs)
-    x = tf.keras.layers.Dense(64, activation='relu')(x)
-    output = tf.keras.layers.Dense(1)(x)
-
-    model = tf.keras.Model(inputs=inputs, outputs=output)
-
-    # model = tf.keras.models.Sequential([
-    #     tf.keras.layers.Dense(128, activation='relu', input_shape=(7,)),
-    #     tf.keras.layers.Dense(64, activation='relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
-    model.compile(optimizer='adam', loss='mean_squared_error')
+    model = _build_keras_model()
 
     model.fit(train_dataset, steps_per_epoch=fn_args.train_steps, validation_data=eval_dataset, validation_steps=fn_args.eval_steps)
 
     print("Model training completed.Serving model dirL ",fn_args.serving_model_dir)
-    model.save(fn_args.serving_model_dir, save_format='tf')
+    signatures = {
+      'serving_default': _get_serve_tf_examples_fn(model, tf_transform_output),
+    }
+    model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
 
 
 
