@@ -1,5 +1,5 @@
 from tfx.components import CsvExampleGen
-from tfx.v1.proto import example_gen_pb2
+from tfx.proto import example_gen_pb2
 from tfx.v1.proto import Output
 from tfx import proto
 
