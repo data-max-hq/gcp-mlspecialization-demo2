@@ -14,14 +14,7 @@ eval_config = tfma.EvalConfig(
         tfma.MetricsSpec(
             metrics=[
                 tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 1})))
-                ])],
-    data_spec=evaluator_pb2.DataSpec(
-            tf_record_data_spec=evaluator_pb2.TFRecordDataSpec(
-                file_pattern=[
-                    'Split:test'
-                ]
-            )
-        )
+                ])]
     )
 
 
@@ -29,7 +22,8 @@ def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
-        eval_config=eval_config
+        eval_config=eval_config,
+        example_splits=['test']
     )
 
     pusher = Pusher(
