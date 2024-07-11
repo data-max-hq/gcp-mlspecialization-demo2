@@ -23,7 +23,9 @@ def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
         eval_config=eval_config,
-        split_config=evaluator_pb2.SplitConfig(splits=["test"])
+        splits_config=evaluator_pb2.SplitsConfig(
+            evaluate=['test']
+        )
     )
 
     pusher = Pusher(
