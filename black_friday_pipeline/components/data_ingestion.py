@@ -17,7 +17,7 @@ def create_example_gen(input_base: str, fraction: float = 1.0):
 
             range_config=example_gen_pb2.RangeConfig(
                 start_span_number=0,
-                end_span_number=int(fraction * 1)  # Assuming 100 total spans
+                end_span_number=int(fraction * 1)
             )
              
     )
