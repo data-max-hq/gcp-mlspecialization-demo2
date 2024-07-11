@@ -110,11 +110,9 @@ def run_fn(fn_args):
 
    train_dataset = input_fn(
        fn_args.train_files,
-       fn_args.data_accessor,
        tf_transform_output)
    eval_dataset = input_fn(
        fn_args.eval_files,
-       fn_args.data_accessor,
        tf_transform_output)
 
    model = _build_keras_model()
