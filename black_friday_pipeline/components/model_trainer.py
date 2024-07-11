@@ -139,6 +139,11 @@ def run_fn(fn_args):
     print("Transformation layer is NOT present in the loaded model")
 
 
+    sample_input = tf.constant(['{"Age": "23", "City_Category": "B", "Gender": "M", "Marital_Status": "0", "Occupation": "4", "Product_Category_1": "3", "Product_Category_2": "6", "Product_Category_3": "14", "Stay_In_Current_City_Years": "2"}'])
+    serve_fn = loaded_model.signatures['serving_default']
+    predictions = serve_fn(examples=sample_input)
+    print("Predictions:", predictions)
+
 def create_trainer(transform, schema_gen,module_file):
     return Trainer(
         module_file=module_file, 

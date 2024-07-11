@@ -25,14 +25,6 @@ def preprocessing_fn(inputs):
     outputs['Occupation'] = tft.compute_and_apply_vocabulary(inputs['Occupation'])
     return outputs
 
-def _apply_preprocessing(raw_features, tft_layer):
-  transformed_features = tft_layer(raw_features)
-  if _LABEL_KEY in raw_features:
-    transformed_label = transformed_features.pop(_LABEL_KEY)
-    return transformed_features, transformed_label
-  else:
-    return transformed_features, None
-
 
 def create_transform(example_gen, schema_gen):
     return Transform(
