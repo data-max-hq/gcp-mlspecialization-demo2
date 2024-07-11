@@ -1,13 +1,14 @@
 from tfx.components import CsvExampleGen
-from tfx.proto import example_gen_pb2
+import tfx.proto
 
 def create_example_gen(input_base: str):
-    split_config = example_gen_pb2.SplitConfig(splits=[
-        example_gen_pb2.SplitConfig.Split(name='train', hash_buckets=8),
-        example_gen_pb2.SplitConfig.Split(name='test', hash_buckets=2)
-    ])
-    example_gen = CsvExampleGen(
-        input_base=input_base,
-        split_config=split_config
-    )
-    return example_gen(input_base=input_base)
+    output = tfx.proto.Output(
+             split_config=tfx.proto.example_gen_pb2.SplitConfig(splits=[
+                 tfx.proto.SplitConfig.Split(name='train', hash_buckets=8),
+                 tfx.proto.SplitConfig.Split(name='eval', hash_buckets=1),
+                 tfx.proto.SplitConfig.Split(name='test', hash_buckets=1)
+             ]))
+    
+    example_gen = CsvExampleGen(input_base=input_base, output_config=output)
+    
+    return example_gen
