@@ -86,18 +86,18 @@ def _build_keras_model() -> tf.keras.Model:
     ]
     
     # Concatenate inputs to create a single input tensor
-    concatenated_inputs = tf.layers.concatenate(inputs)
+    concatenated_inputs = tf.keras.layers.concatenate(inputs)
     
     # Reshape the inputs to a suitable shape for CNN
-    reshaped_inputs = tf.layers.Reshape((len(_FEATURE_KEYS), 1, 1))(concatenated_inputs)
+    reshaped_inputs = tf.keras.layers.Reshape((len(_FEATURE_KEYS), 1, 1))(concatenated_inputs)
     
     # Convolutional layers
-    x = tf.layers.Conv2D(16, (2, 2), activation='relu')(reshaped_inputs)
-    x = tf.layers.Conv2D(32, (2, 2), activation='relu')(x)
-    x = tf.layers.Flatten()(x)
+    x = tf.keras.layers.Conv2D(16, (2, 2), activation='relu')(reshaped_inputs)
+    x = tf.keras.layers.Conv2D(32, (2, 2), activation='relu')(x)
+    x = tf.keras.layers.Flatten()(x)
     
     # Fully connected layer
-    x = tf.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
     
     # Output layer for regression
     outputs = tf.layers.Dense(1)(x)
