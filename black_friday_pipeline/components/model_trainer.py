@@ -91,14 +91,8 @@ def _build_keras_model() -> tf.keras.Model:
     # Reshape the inputs to a suitable shape for CNN
     reshaped_inputs = tf.keras.layers.Reshape((len(_FEATURE_KEYS), 1, 1))(concatenated_inputs)
     
-    # Convolutional layers
-    x = tf.keras.layers.Conv2D(16, (2, 2), activation='relu')(reshaped_inputs)
-    x = tf.keras.layers.Conv2D(32, (2, 2), activation='relu')(x)
-    x = tf.keras.layers.Flatten()(x)
-    
-    # Fully connected layer
-    x = tf.keras.layers.Dense(64, activation='relu')(x)
-    
+    x = tf.keras.layers.Dense(64, activation='relu')(reshaped_inputs)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
     # Output layer for regression
     outputs = tf.layers.Dense(1)(x)
     
