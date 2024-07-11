@@ -33,8 +33,9 @@ def _apply_preprocessing(raw_features, tft_layer):
 
 
 def create_transform(example_gen, schema_gen):
+    print("EXAMPLE_GEN", example_gen)
     return Transform(
-        examples=example_gen.train.outputs['examples'],
+        examples=example_gen.outputs['examples'].train,
         schema=schema_gen.outputs['schema'],
         module_file="components/data_transformation.py"
     )
