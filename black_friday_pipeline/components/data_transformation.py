@@ -1,5 +1,7 @@
 from tfx.components import Transform
 import tensorflow_transform as tft
+from tfx.proto import transform_pb2
+
 
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _LABEL_KEY = 'Purchase'
@@ -37,5 +39,8 @@ def create_transform(example_gen, schema_gen):
     return Transform(
         examples=example_gen.outputs['examples'].train,
         schema=schema_gen.outputs['schema'],
-        module_file="components/data_transformation.py"
+        module_file="components/data_transformation.py",
+        splits_config=transform_pb2.SplitsConfig(
+            transform=['train', 'eval']
+        )
     )
