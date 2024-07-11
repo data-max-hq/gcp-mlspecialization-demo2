@@ -107,6 +107,7 @@ def run_fn(fn_args):
        fn_args: Holds args used to train the model as name/value pairs.
    """
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
+   print("TF Transform output:", tf_transform_output)
 
    train_dataset = input_fn(
        fn_args.train_files,
