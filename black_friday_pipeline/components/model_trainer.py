@@ -160,7 +160,7 @@ def run_fn(fn_args):
        fn_args.eval_files,
        tf_transform_output)
 
-   model = _build_keras_model()
+   model = _build_keras_model(tf_transform_output)
 
    model.compile(model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae']))
 
