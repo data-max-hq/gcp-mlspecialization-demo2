@@ -77,7 +77,7 @@ def preprocessing_fn(inputs):
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
     for key in _LABEL_KEY:
-        outputs[t_name(key)] = tft.scale_to_z_score(inputs[_LABEL_KEY])
+        outputs[key] = tft.scale_to_z_score(inputs[_LABEL_KEY])
 
     # for key in _FEATURE_KEYS:
     #     outputs[key] = inputs[key]
