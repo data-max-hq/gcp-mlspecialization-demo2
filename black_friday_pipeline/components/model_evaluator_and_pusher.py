@@ -5,8 +5,15 @@ import tensorflow_model_analysis as tfma
 
 eval_config = tfma.EvalConfig(
     model_specs=[
-        tfma.ModelSpec(label_key='Purchase')
-    ],
+        # This assumes a serving model with signature 'serving_default'. If
+        # using estimator based EvalSavedModel, add signature_name: 'eval' and
+        # remove the label_key.
+        tfma.ModelSpec(
+            signature_name='serving_default',
+            label_key='Purchase',
+            preprocessing_function_names=['transform_features'],
+            )
+        ],
     slicing_specs=[
         tfma.SlicingSpec()
     ],
