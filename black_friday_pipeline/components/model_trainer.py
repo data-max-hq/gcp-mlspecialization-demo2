@@ -162,7 +162,11 @@ def run_fn(fn_args):
 
    model = _build_keras_model(tf_transform_output)
 
-   model.compile(model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae']))
+   model.compile(
+        optimizer=tf.keras.optimizers.Adam(1e-2),
+        loss='mean_squared_error',  # Using MSE for regression
+        metrics=['mean_absolute_error']  # MAE as an additional metric
+    )
 
    tensorboard_callback = tf.keras.callbacks.TensorBoard(
       log_dir=fn_args.model_run_dir, update_freq='batch')
