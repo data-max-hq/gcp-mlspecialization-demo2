@@ -6,10 +6,8 @@ from tfx.proto import transform_pb2
 
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _CATEGORICAL_NUMERICAL_FEATURES = ["Marital_Status","Occupation","Product_Category_1", "Product_Category_2", "Product_Category_3"]
-_CATEGORICAL_STRING_FEATURES = ["City_Category", "Gender"]
-_BUCKET_FEATURES = ["Age", "Stay_In_Current_City_Years"]
+_CATEGORICAL_STRING_FEATURES = ["City_Category","Age","Stay_In_Current_City_Years", "Gender"]
 _LABEL_KEY = 'Purchase'
-_FEATURE_BUCKET_COUNT = 10
 _VOCAB_SIZE = 1000
 _OOV_SIZE = 10
 
@@ -70,13 +68,7 @@ def _make_one_hot(x, key):
 def preprocessing_fn(inputs):
 
     outputs = {}
-
-
-    for key in _BUCKET_FEATURES:
-        outputs[t_name(key)] = tf.cast(tft.bucketize(
-            _fill_in_missing(inputs[key]), _FEATURE_BUCKET_COUNT, name=key),
-            dtype=tf.float32)
-        
+       
     for key in _CATEGORICAL_NUMERICAL_FEATURES:
        outputs[t_name(key)] = _make_one_hot(tf.strings.strip(
         tf.strings.as_string(_fill_in_missing(inputs[key]))), key)
