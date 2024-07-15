@@ -122,27 +122,50 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
 
     feature_spec = tf_transform_output.transformed_feature_spec().copy()
     feature_spec.pop(_LABEL_KEY)
+    inputs = {key: tf.keras.layers.Input(name=key, shape=(), dtype=tf.float32) for key in feature_spec.keys()}
+    
+    x = tf.keras.layers.Concatenate()(list(inputs.values()))
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dropout(0.3)(x)  # Adding Dropout for regularization
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    output = tf.keras.layers.Dense(1)(x)
 
-    inputs = {}
-    for key, spec in feature_spec.items():
-        if isinstance(spec, tf.io.VarLenFeature):
-            inputs[key] = tf.keras.layers.Input(
-                shape=[None], name=key, dtype=spec.dtype, sparse=True)
-        elif isinstance(spec, tf.io.FixedLenFeature):
-            inputs[key] = tf.keras.layers.Input(
-                shape=spec.shape or [1], name=key, dtype=spec.dtype)
-        else:
-            raise ValueError('Spec type is not supported: ', key, spec)
+    return tf.keras.Model(inputs=inputs, outputs=output)
+
+
+
+# def _build_keras_model(tf_transform_output: TFTransformOutput
+#                        ) -> tf.keras.Model:
+#     """Creates a CNN Keras model for predicting purchase amount in Black Friday data.
+
+#     Returns:
+#         A Keras Model.
+#     """
+
+#     feature_spec = tf_transform_output.transformed_feature_spec().copy()
+#     feature_spec.pop(_LABEL_KEY)
+
+#     inputs = {}
+#     for key, spec in feature_spec.items():
+#         if isinstance(spec, tf.io.VarLenFeature):
+#             inputs[key] = tf.keras.layers.Input(
+#                 shape=[None], name=key, dtype=spec.dtype, sparse=True)
+#         elif isinstance(spec, tf.io.FixedLenFeature):
+#             inputs[key] = tf.keras.layers.Input(
+#                 shape=spec.shape or [1], name=key, dtype=spec.dtype)
+#         else:
+#             raise ValueError('Spec type is not supported: ', key, spec)
         
 
-    # Concatenate inputs to create a single input tensor
-    output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
-    output = tf.keras.layers.Dense(100, activation='relu')(output)
-    output = tf.keras.layers.Dense(70, activation='relu')(output)
-    output = tf.keras.layers.Dense(50, activation='relu')(output)
-    output = tf.keras.layers.Dense(20, activation='relu')(output)
-    output = tf.keras.layers.Dense(1)(output)
-    return tf.keras.Model(inputs=inputs, outputs=output)
+#     # Concatenate inputs to create a single input tensor
+#     output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
+#     output = tf.keras.layers.Dense(100, activation='relu')(output)
+#     output = tf.keras.layers.Dense(70, activation='relu')(output)
+#     output = tf.keras.layers.Dense(50, activation='relu')(output)
+#     output = tf.keras.layers.Dense(20, activation='relu')(output)
+#     output = tf.keras.layers.Dense(1)(output)
+#     return tf.keras.Model(inputs=inputs, outputs=output)
 
 def run_fn(fn_args):
    """Train the model based on given args.
@@ -162,8 +185,13 @@ def run_fn(fn_args):
 
    model = _build_keras_model(tf_transform_output)
 
+   lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+        initial_learning_rate=1e-2,
+        decay_steps=1000,
+        decay_rate=0.9)
+
    model.compile(
-        optimizer=tf.keras.optimizers.Adam(1e-2),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
         loss='mean_squared_error',  # Using MSE for regression
         metrics=['mean_absolute_error']  # MAE as an additional metric
     )

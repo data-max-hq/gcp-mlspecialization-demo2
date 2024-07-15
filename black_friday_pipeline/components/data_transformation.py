@@ -5,7 +5,8 @@ from tfx.proto import transform_pb2
 
 
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
-_CATEGORICAL_NUMERICAL_FEATURES = ["Marital_Status","Occupation","Product_Category_1", "Product_Category_2", "Product_Category_3"]
+_CATEGORICAL_NUMERICAL_FEATURES = ["Marital_Status","Occupation","Product_Category_1"]
+# _CATEGORICAL_NUMERICAL_FEATURES = ["Marital_Status","Occupation","Product_Category_1", "Product_Category_2", "Product_Category_3"]
 _CATEGORICAL_STRING_FEATURES = ["City_Category","Age","Stay_In_Current_City_Years", "Gender"]
 _LABEL_KEY = 'Purchase'
 _VOCAB_SIZE = 1000
@@ -69,6 +70,13 @@ def preprocessing_fn(inputs):
 
     outputs = {}
        
+    # Example of adding interaction feature
+    outputs['Age_Occupation'] = tft.tf.matmul(inputs['Age'], inputs['Occupation'])
+
+    # Example of adding polynomial feature
+    outputs['Age_squared'] = tf.pow(inputs['Age'], 2)
+
+
     for key in _CATEGORICAL_NUMERICAL_FEATURES:
        outputs[t_name(key)] = _make_one_hot(tf.strings.strip(
         tf.strings.as_string(_fill_in_missing(inputs[key]))), key)
