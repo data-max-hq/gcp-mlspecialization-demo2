@@ -37,4 +37,4 @@ __MACOSX/
 # Other files
 .DS_Store?
 
-test.py
+test_deploy.py

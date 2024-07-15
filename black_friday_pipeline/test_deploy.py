@@ -3,6 +3,17 @@ from google.cloud import aiplatform
 from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
 import tensorflow as tf
+import dotenv
+import os
+
+
+dotenv.load_dotenv()
+
+PROJECT_NAME = os.getenv("GOOGLE_CLOUD_PROJECT")
+GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+ENDPOINT_ID = os.getenv("ENDPOINT_ID")
+API_ENDPOINT = os.getenv("API_ENDPOINT")
 
 def serialize_example(input_data):
     feature = {
@@ -12,8 +23,8 @@ def serialize_example(input_data):
         'Marital_Status': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Marital_Status']])),
         'Occupation': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Occupation']])),
         'Product_Category_1': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_1']])),
-        # 'Product_Category_2': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_2']])),
-        # 'Product_Category_3': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_3']])),
+        'Product_Category_2': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_2']])),
+        'Product_Category_3': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_3']])),
         'Stay_In_Current_City_Years': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Stay_In_Current_City_Years'].encode()])),
         'Product_ID': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Product_ID'].encode()])),
         'User_ID': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['User_ID']]))
@@ -25,8 +36,8 @@ def predict_custom_trained_model_sample(
     project: str,
     endpoint_id: str,
     instances: Union[Dict, List[Dict]],
-    location: str = "europe-west3",
-    api_endpoint: str = "europe-west3-aiplatform.googleapis.com",
+    location: str = GOOGLE_CLOUD_REGION,
+    api_endpoint: str = API_ENDPOINT,
 ):
     """
     `instances` can be either single instance of type dict or a list
@@ -55,10 +66,10 @@ def predict_custom_trained_model_sample(
         print(" prediction:", prediction)
 
 # Example usage
-project = "indigo-idea-428211-h3"
-endpoint_id = "6904691129875169280"
-location = "europe-west3"
-api_endpoint = "europe-west3-aiplatform.googleapis.com"
+project = GOOGLE_CLOUD_PROJECT
+endpoint_id = ENDPOINT_ID
+location = GOOGLE_CLOUD_REGION
+api_endpoint = API_ENDPOINT
 
 input_data = {
     'Age': "26",
@@ -67,8 +78,8 @@ input_data = {
     'Marital_Status': 0,
     'Occupation': 4,
     'Product_Category_1': 3,
-    # 'Product_Category_2': 5,
-    # 'Product_Category_3': 0,
+    'Product_Category_2': 5,
+    'Product_Category_3': 0,
     'Stay_In_Current_City_Years': '2',
     'Product_ID': 'P00248942',
     'User_ID': 1000001
@@ -82,8 +93,8 @@ encoded_example = tf.io.encode_base64(serialized_example).numpy().decode('utf-8'
 
 predict_custom_trained_model_sample(
     project="908149789490",
-    endpoint_id="6904691129875169280",
-    location="europe-west3",
+    endpoint_id=ENDPOINT_ID,
+    location=GOOGLE_CLOUD_REGION,
     instances={"examples":{"b64": encoded_example}}
 )
 
