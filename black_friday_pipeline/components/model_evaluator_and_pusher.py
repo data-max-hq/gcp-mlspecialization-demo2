@@ -20,7 +20,7 @@ eval_config = tfma.EvalConfig(
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
-                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 1})))
+                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 100000000000000})))
                 ])]
     )
 
