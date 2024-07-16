@@ -122,9 +122,19 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
 
     feature_spec = tf_transform_output.transformed_feature_spec().copy()
     feature_spec.pop(_LABEL_KEY)
-    inputs = {key: tf.keras.layers.Input(name=key, shape=(), dtype=tf.float32) for key in feature_spec.keys()}
-    
-    x = tf.keras.layers.Concatenate()(list(inputs.values()))
+
+    inputs = {}
+    for key, spec in feature_spec.items():
+        if isinstance(spec, tf.io.VarLenFeature):
+            inputs[key] = tf.keras.layers.Input(
+                shape=[None], name=key, dtype=spec.dtype, sparse=True)
+        elif isinstance(spec, tf.io.FixedLenFeature):
+            inputs[key] = tf.keras.layers.Input(
+                shape=spec.shape or [1], name=key, dtype=spec.dtype)
+        else:
+            raise ValueError('Spec type is not supported: ', key, spec)
+          
+    x = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
     x = tf.keras.layers.Dense(128, activation='relu')(x)
     x = tf.keras.layers.Dropout(0.3)(x)  # Adding Dropout for regularization
     x = tf.keras.layers.Dense(64, activation='relu')(x)
