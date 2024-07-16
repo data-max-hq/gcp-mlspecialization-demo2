@@ -62,6 +62,7 @@ def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
 
     pusher = tfx.extensions.google_cloud_ai_platform.Pusher(
       model=trainer.outputs['model'],
+      model_blessing=evaluator.outputs['blessing'],
       custom_config={
           tfx.extensions.google_cloud_ai_platform.ENABLE_VERTEX_KEY:
               True,
