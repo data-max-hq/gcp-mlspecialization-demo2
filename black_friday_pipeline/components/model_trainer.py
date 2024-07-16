@@ -1,5 +1,6 @@
 from tfx.components import Trainer
 from tfx.proto import trainer_pb2
+from tfx import v1 as tfx
 import tensorflow as tf
 from tensorflow_transform import TFTransformOutput
 
@@ -11,9 +12,11 @@ import dotenv
 dotenv.load_dotenv()
 
 
+
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+
 
 _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
@@ -220,21 +223,53 @@ def run_fn(fn_args):
    export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)
 
 def create_trainer(transform, schema_gen,module_file):
-    return Trainer(
-        module_file=module_file, 
-        # Adjust this path
-        custom_config={
-            'ai_platform_training_args': {
-                'project': GOOGLE_CLOUD_PROJECT,
-                'region': GOOGLE_CLOUD_REGION,
-                'job-dir': f'{GCS_BUCKET_NAME}/jobs'
-            }
-        },
+
+    vertex_job_spec = {
+      'project': GOOGLE_CLOUD_PROJECT,
+      'worker_pool_specs': [{
+          'machine_spec': {
+              'machine_type': 'n1-standard-2',
+          },
+          'replica_count': 1,
+          'container_spec': {
+              'image_uri': 'gcr.io/tfx-oss-public/tfx:{}'.format(tfx.__version__),
+          },
+      }],
+    }
+    
+    trainer = tfx.extensions.google_cloud_ai_platform.Trainer(
+        module_file=module_file,
         transformed_examples=transform.outputs['transformed_examples'],
+        train_args=tfx.proto.TrainArgs(num_steps=1000),
+        eval_args=tfx.proto.EvalArgs(num_steps=200),
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
-        train_args=trainer_pb2.TrainArgs(num_steps=1000),
-        eval_args=trainer_pb2.EvalArgs(num_steps=200)
-    )
+        custom_config={
+            tfx.extensions.google_cloud_ai_platform.ENABLE_VERTEX_KEY:
+                True,
+            tfx.extensions.google_cloud_ai_platform.VERTEX_REGION_KEY:
+                GOOGLE_CLOUD_REGION,
+            tfx.extensions.google_cloud_ai_platform.TRAINING_ARGS_KEY:
+                vertex_job_spec,
+        })
+
+    return trainer
+
+    # return Trainer(
+    #     module_file=module_file, 
+    #     # Adjust this path
+    #     custom_config={
+    #         'ai_platform_training_args': {
+    #             'project': GOOGLE_CLOUD_PROJECT,
+    #             'region': GOOGLE_CLOUD_REGION,
+    #             'job-dir': f'{GCS_BUCKET_NAME}/jobs'
+    #         }
+    #     },
+    #     transformed_examples=transform.outputs['transformed_examples'],
+    #     schema=schema_gen.outputs['schema'],
+    #     transform_graph=transform.outputs['transform_graph'],
+    #     train_args=trainer_pb2.TrainArgs(num_steps=1000),
+    #     eval_args=trainer_pb2.EvalArgs(num_steps=200)
+    # )
 
 
