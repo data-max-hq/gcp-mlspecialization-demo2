@@ -39,7 +39,6 @@ eval_config = tfma.EvalConfig(
 vertex_serving_spec = {
       'project_id': project_id,
       'endpoint_name': endpoint_name,
-      'model_display_name': 'black_friday_model_test',
       # Remaining argument is passed to aiplatform.Model.deploy()
       # See https://cloud.google.com/vertex-ai/docs/predictions/deploy-model-api#deploy_the_model
       # for the detail.
