@@ -70,13 +70,6 @@ def preprocessing_fn(inputs):
 
     outputs = {}
        
-    # Example of adding interaction feature
-    outputs['Age_Occupation'] = tft.tf.matmul(inputs['Age'], inputs['Occupation'])
-
-    # Example of adding polynomial feature
-    outputs['Age_squared'] = tf.pow(inputs['Age'], 2)
-
-
     for key in _CATEGORICAL_NUMERICAL_FEATURES:
        outputs[t_name(key)] = _make_one_hot(tf.strings.strip(
         tf.strings.as_string(_fill_in_missing(inputs[key]))), key)
@@ -84,7 +77,9 @@ def preprocessing_fn(inputs):
     for key in _CATEGORICAL_STRING_FEATURES:
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
-    outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
+    # outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
+
+    outputs[_LABEL_KEY] = inputs[_LABEL_KEY]
 
     # for key in _FEATURE_KEYS:
     #     outputs[key] = inputs[key]

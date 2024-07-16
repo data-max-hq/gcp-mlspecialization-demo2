@@ -38,3 +38,5 @@ __MACOSX/
 .DS_Store?
 
 test_deploy.py
+
+test.py
