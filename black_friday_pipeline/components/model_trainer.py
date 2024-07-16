@@ -228,7 +228,7 @@ def create_trainer(transform, schema_gen,module_file):
       'project': GOOGLE_CLOUD_PROJECT,
       'worker_pool_specs': [{
           'machine_spec': {
-              'machine_type': 'n1-standard-2',
+              'machine_type': 'n1-standard-4',
           },
           'replica_count': 1,
           'container_spec': {
@@ -236,7 +236,7 @@ def create_trainer(transform, schema_gen,module_file):
           },
       }],
     }
-    
+
     trainer = tfx.extensions.google_cloud_ai_platform.Trainer(
         module_file=module_file,
         transformed_examples=transform.outputs['transformed_examples'],
