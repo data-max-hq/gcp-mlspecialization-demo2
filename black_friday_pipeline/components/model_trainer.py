@@ -28,14 +28,16 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
   @tf.function(input_signature=[
       tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
   ])
-  def serve_tf_examples_fn(serialized_tf_example):
+  def serve_tf_examples_fn(raw_example):
     """Returns the output to be used in the serving signature."""
     raw_feature_spec = tf_transform_output.raw_feature_spec()
     # Remove label feature since these will not be present at serving time.
     raw_feature_spec.pop(_LABEL_KEY)
-    raw_features = tf.io.parse_example(serialized_tf_example, raw_feature_spec)
-    transformed_features = model.tft_layer_inference(raw_features)
-    logging.info('serve_transformed_features = %s', transformed_features)
+
+    parsed_data = tf.map_fn(lambda x: tf.io.decode_json_example(x), raw_example, dtype=tf.string)
+        
+    # Apply the transform to the parsed data
+    transformed_features = model.tft_layer_inference(parsed_data)
 
     outputs = model(transformed_features)
     # TODO(b/154085620): Convert the predicted labels from the model using a
