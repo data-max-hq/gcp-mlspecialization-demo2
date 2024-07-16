@@ -7,7 +7,6 @@ from components.data_validation import create_data_validation
 from components.data_transformation import create_transform
 from components.model_trainer import create_trainer
 from components.model_evaluator_and_pusher import create_evaluator_and_pusher
-from components.model_registry_and_deployer import create_register_and_deployer
 
 
 def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serving_model_dir:str,module_file:str,project:str,region:str):
@@ -16,7 +15,6 @@ def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serv
     transform = create_transform(example_gen, schema_gen)
     trainer = create_trainer(transform, schema_gen, module_file)
     evaluator, pusher = create_evaluator_and_pusher(example_gen, trainer, serving_model_dir)
-    # model_register_and_deployer = create_register_and_deployer()
 
     return pipeline.Pipeline(
         pipeline_name=pipeline_name,
@@ -29,7 +27,6 @@ def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serv
             transform,
             trainer,
             evaluator,
-            pusher,
-            # model_register_and_deployer
-        ]
+            pusher
+            ]
     )
