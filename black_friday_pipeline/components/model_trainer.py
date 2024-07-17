@@ -25,37 +25,48 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
   # TODO(b/162357359): Revise once the bug is resolved.
   model.tft_layer_inference = tf_transform_output.transform_features_layer()
 
+
+
+  def serialize_example(input_data):
+    feature = {
+        'Age': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Age'].encode()])),
+        'City_Category': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['City_Category'].encode()])),
+        'Gender': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Gender'].encode()])),
+        'Marital_Status': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Marital_Status']])),
+        'Occupation': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Occupation']])),
+        'Product_Category_1': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_1']])),
+        'Product_Category_2': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_2']])),
+        'Product_Category_3': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_3']])),
+        'Stay_In_Current_City_Years': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Stay_In_Current_City_Years'].encode()])),
+        'Product_ID': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Product_ID'].encode()])),
+        'User_ID': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['User_ID']]))
+    }
+
+    example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
+    serialized_example = example_proto.SerializeToString()
+    return serialized_example
+     
   @tf.function(input_signature=[
       tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
   ])
-  def serve_tf_json_fn(serialized_json_example):
-        """Returns the output to be used in the serving signature."""
-        # Parse the JSON input
-        parsed_json = tf.map_fn(
-            lambda x: tf.io.decode_json_example(x, example_type=tf.string),
-            serialized_json_example,
-            dtype=tf.string
-        )
+  def serve_tf_examples_fn(raw_json_examples):
 
-        # Convert the parsed JSON to a dictionary of features
-        raw_feature_spec = tf_transform_output.raw_feature_spec()
-        raw_features = {}
-        for feature_name, feature_type in raw_feature_spec.items():
-            if feature_name == _LABEL_KEY:
-                continue
-            if feature_type == tf.io.FixedLenFeature([], tf.string):
-                raw_features[feature_name] = parsed_json[feature_name]
-            else:
-                raw_features[feature_name] = tf.io.parse_tensor(
-                    parsed_json[feature_name], feature_type.dtype)
+    serialized_tf_example = serialize_example(raw_json_examples)
+    
+    """Returns the output to be used in the serving signature."""
+    raw_feature_spec = tf_transform_output.raw_feature_spec()
+    # Remove label feature since these will not be present at serving time.
+    raw_feature_spec.pop(_LABEL_KEY)
+    raw_features = tf.io.parse_example(serialized_tf_example, raw_feature_spec)
+    transformed_features = model.tft_layer_inference(raw_features)
+    logging.info('serve_transformed_features = %s', transformed_features)
 
-        transformed_features = model.tft_layer_inference(raw_features)
-        logging.info('serve_transformed_features = %s', transformed_features)
+    outputs = model(transformed_features)
+    # TODO(b/154085620): Convert the predicted labels from the model using a
+    # reverse-lookup (opposite of transform.py).
+    return {'outputs': outputs}
 
-        outputs = model(transformed_features)
-        return {'outputs': outputs}
-
-  return serve_tf_json_fn
+  return serve_tf_examples_fn
 
 def _get_transform_features_signature(model, tf_transform_output):
   """Returns a serving signature that applies tf.Transform to features."""
