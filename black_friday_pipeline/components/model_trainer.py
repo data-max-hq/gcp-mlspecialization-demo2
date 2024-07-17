@@ -186,8 +186,6 @@ def run_fn(fn_args):
 
    model = _build_keras_model(tf_transform_output)
 
-   tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-
    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
 
 
