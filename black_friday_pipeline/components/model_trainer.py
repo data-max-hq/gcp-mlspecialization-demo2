@@ -186,6 +186,11 @@ def run_fn(fn_args):
 
    model = _build_keras_model(tf_transform_output)
 
+   tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+   early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+
+
    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
         initial_learning_rate=1e-2,
         decay_steps=1000,
@@ -199,6 +204,7 @@ def run_fn(fn_args):
 
    tensorboard_callback = tf.keras.callbacks.TensorBoard(
       log_dir=fn_args.model_run_dir, update_freq='batch')
+   print("Training logs saved to: " + fn_args.model_run_dir)
    
 
    model.fit(
@@ -206,7 +212,7 @@ def run_fn(fn_args):
       steps_per_epoch=fn_args.train_steps,
       validation_data=eval_dataset,
       validation_steps=fn_args.eval_steps,
-      callbacks=[tensorboard_callback])
+      callbacks=[tensorboard_callback, early_stopping],)
    # Ensure the transformation layer is saved with the model
    export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)
 
@@ -225,8 +231,8 @@ def create_trainer(transform, schema_gen,module_file):
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
-        train_args=trainer_pb2.TrainArgs(num_steps=1000),
-        eval_args=trainer_pb2.EvalArgs(num_steps=200)
+        train_args=trainer_pb2.TrainArgs(num_steps=10000),
+        eval_args=trainer_pb2.EvalArgs(num_steps=2000)
     )
 
 
