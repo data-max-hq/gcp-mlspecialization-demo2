@@ -59,6 +59,12 @@ def _get_transform_features_signature(model, tf_transform_output):
   def transform_features_fn(serialized_tf_example):
     """Returns the transformed_features to be fed as input to evaluator."""
     raw_feature_spec = tf_transform_output.raw_feature_spec()
+    print("Raw feature spec:", raw_feature_spec)
+    # Remove features that will not be present at serving time.
+    for key in raw_feature_spec.keys():
+        if key not in _FEATURE_KEYS:
+            raw_feature_spec.pop(key)
+
     raw_features = tf.io.parse_example(serialized_tf_example, raw_feature_spec)
     transformed_features = model.tft_layer_eval(raw_features)
     logging.info('eval_transformed_features = %s', transformed_features)
@@ -71,7 +77,6 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
             tf_transform_output.transformed_feature_spec().copy()
         )
         print("Transformed feature spec:", transformed_feature_spec)
-        print("File pattern:", file_pattern)
 
         dataset = tf.data.experimental.make_batched_features_dataset(
             file_pattern=file_pattern,
@@ -229,8 +234,9 @@ def create_trainer(transform, schema_gen,module_file):
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
-        train_args=trainer_pb2.TrainArgs(num_steps=10000),
-        eval_args=trainer_pb2.EvalArgs(num_steps=2000)
+        train_args=trainer_pb2.TrainArgs(num_steps=50000),
+        eval_args=trainer_pb2.EvalArgs(num_steps=10000)
     )
+
 
 
