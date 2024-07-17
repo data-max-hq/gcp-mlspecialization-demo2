@@ -26,32 +26,10 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
   model.tft_layer_inference = tf_transform_output.transform_features_layer()
 
 
-
-  def serialize_example(input_data):
-    feature = {
-        'Age': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Age'].encode()])),
-        'City_Category': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['City_Category'].encode()])),
-        'Gender': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Gender'].encode()])),
-        'Marital_Status': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Marital_Status']])),
-        'Occupation': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Occupation']])),
-        'Product_Category_1': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_1']])),
-        'Product_Category_2': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_2']])),
-        'Product_Category_3': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_3']])),
-        'Stay_In_Current_City_Years': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Stay_In_Current_City_Years'].encode()])),
-        'Product_ID': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Product_ID'].encode()])),
-        'User_ID': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['User_ID']]))
-    }
-
-    example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
-    serialized_example = example_proto.SerializeToString()
-    return serialized_example
-     
   @tf.function(input_signature=[
       tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
   ])
-  def serve_tf_examples_fn(raw_json_examples):
-
-    serialized_tf_example = serialize_example(raw_json_examples)
+  def serve_tf_examples_fn(serialized_tf_example):
     
     """Returns the output to be used in the serving signature."""
     raw_feature_spec = tf_transform_output.raw_feature_spec()
