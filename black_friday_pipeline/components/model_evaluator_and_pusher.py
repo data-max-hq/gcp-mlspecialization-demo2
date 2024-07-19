@@ -31,7 +31,7 @@ eval_config = tfma.EvalConfig(
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
-                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 100000000000000})))
+                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 10000000})))
                 ])]
     )
 
@@ -53,9 +53,18 @@ serving_image = "europe-docker.pkg.dev/vertex-ai-restricted/prediction/tf_opt-cp
 
 
 def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
+
+    model_resolver = tfx.dsl.Resolver(
+    strategy_class=tfx.dsl.experimental.LatestBlessedModelStrategy,
+    model=tfx.dsl.Channel(type=tfx.types.standard_artifacts.Model),
+    model_blessing=tfx.dsl.Channel(
+        type=tfx.types.standard_artifacts.ModelBlessing)).with_id(
+            'latest_blessed_model_resolver')
+
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
+        baseline_model=model_resolver.outputs['model'],
         eval_config=eval_config,
         example_splits=['test']
     )

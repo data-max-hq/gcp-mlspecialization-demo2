@@ -132,6 +132,7 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
             raise ValueError('Spec type is not supported: ', key, spec)
           
     x = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
+    x = tf.keras.layers.Dense(512, activation='relu')(x)
     x = tf.keras.layers.Dense(256, activation='relu')(x)
     x = tf.keras.layers.Dense(128, activation='relu')(x)
     x = tf.keras.layers.Dense(64, activation='relu')(x)
@@ -196,7 +197,7 @@ def run_fn(fn_args):
 
 
    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate=1e-2,
+        initial_learning_rate=1e-1,
         decay_steps=1000,
         decay_rate=0.9)
 
@@ -235,8 +236,8 @@ def create_trainer(transform, schema_gen,module_file):
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
-        train_args=trainer_pb2.TrainArgs(num_steps=50000),
-        eval_args=trainer_pb2.EvalArgs(num_steps=10000)
+        train_args=trainer_pb2.TrainArgs(num_steps=1000),
+        eval_args=trainer_pb2.EvalArgs(num_steps=200)
     )
 
 
