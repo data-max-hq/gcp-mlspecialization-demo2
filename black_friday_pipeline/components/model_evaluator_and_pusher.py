@@ -11,9 +11,6 @@ project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
 endpoint_name = os.getenv("SERVING_ENDPOINT_NAME")
 region = os.getenv("GOOGLE_CLOUD_REGION")
 
-
-
-
 eval_config = tfma.EvalConfig(
     model_specs=[
         # This assumes a serving model with signature 'serving_default'. If
