@@ -18,7 +18,7 @@ GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 
-def _get_tf_examples_serving_signature(model, tf_transform_output):
+def _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean, purchase_std):
   """Returns a serving signature that accepts `tensorflow.Example`."""
 
   # We need to track the layers in the model in order to save it.
@@ -47,7 +47,7 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
     outputs = model(transformed_features)
     # TODO(b/154085620): Convert the predicted labels from the model using a
     # reverse-lookup (opposite of transform.py).
-    outputs = tf_transform_output.inverse_transform(outputs, 'Purchase')
+    outputs = (outputs * purchase_std) + purchase_mean
 
     return {'outputs': outputs}
 
@@ -92,7 +92,7 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
 
         return dataset
 
-def export_serving_model(tf_transform_output, model, output_dir):
+def export_serving_model(tf_transform_output, model, output_dir, purchase_mean, purchase_std):
   """Exports a keras model for serving.
   Args:
     tf_transform_output: Wrapper around output of tf.Transform.
@@ -104,7 +104,7 @@ def export_serving_model(tf_transform_output, model, output_dir):
 
   signatures = {
       'serving_default':
-          _get_tf_examples_serving_signature(model, tf_transform_output),
+          _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean, purchase_std),
       'transform_features':
           _get_transform_features_signature(model, tf_transform_output),
   }
@@ -153,6 +153,12 @@ def run_fn(fn_args):
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
    print("TF Transform output:", tf_transform_output)
 
+    # Extract mean and variance for 'Purchase'
+   stats = tf_transform_output.raw_metadata.schema.as_feature_spec()
+   purchase_mean = stats['Purchase_mean']
+   purchase_var = stats['Purchase_var']
+   purchase_std = tf.sqrt(purchase_var)
+
    train_dataset = input_fn(
        fn_args.train_files,
        tf_transform_output)
@@ -188,7 +194,7 @@ def run_fn(fn_args):
       validation_steps=fn_args.eval_steps,
       callbacks=[tensorboard_callback, early_stopping],)
    # Ensure the transformation layer is saved with the model
-   export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)
+   export_serving_model(tf_transform_output, model, fn_args.serving_model_dir, purchase_mean, purchase_std)
 
 def create_trainer(transform, schema_gen,module_file):
 
