@@ -80,8 +80,8 @@ def preprocessing_fn(inputs):
     outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
 
     # Store the mean and variance for inverse transformation
-    outputs['Purchase_mean'] = tft.mean(inputs[_LABEL_KEY])
-    outputs['Purchase_var'] = tft.var(inputs[_LABEL_KEY])
+    # outputs['Purchase_mean'] = tft.mean(inputs[_LABEL_KEY])
+    # outputs['Purchase_var'] = tft.var(inputs[_LABEL_KEY])
 
 
     return outputs
