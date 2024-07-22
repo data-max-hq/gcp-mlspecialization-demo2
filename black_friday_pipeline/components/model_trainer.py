@@ -146,18 +146,14 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
     return tf.keras.Model(inputs=inputs, outputs=output)
 
 def get_pre_transform_stats(pre_transform_stats_uri):
-    # Read the statistics from the pre_transform_stats_uri
-    import json
-    with tf.io.gfile.GFile(pre_transform_stats_uri, 'r') as f:
-        stats = json.load(f)
-    
-    purchase_stats = stats['features']['Purchase']['num_stats']
-    mean = purchase_stats['mean']
-    var = purchase_stats['variance']
-    std = tf.sqrt(var)
-    
-    return mean, std
-
+    stats = tfxio.BeamDataset(pre_transform_stats_uri).read_records()
+    for record in stats:
+        if 'Purchase' in record:
+            mean = record['Purchase']['mean']
+            var = record['Purchase']['var']
+            std = tf.sqrt(var)
+            return mean, std
+    raise ValueError("Purchase statistics not found in pre_transform_stats.")
 
 
 def run_fn(fn_args):
@@ -218,10 +214,9 @@ def create_trainer(transform, schema_gen,module_file):
             'ai_platform_training_args': {
                 'project': GOOGLE_CLOUD_PROJECT,
                 'region': GOOGLE_CLOUD_REGION,
-                'job-dir': f'{GCS_BUCKET_NAME}/jobs',
+                'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             },
-            'pre_transform_stats': transform.outputs['pre_transform_stats'].get(),
- 
+            'pre_transform_stats': transform.outputs['pre_transform_stats']
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],

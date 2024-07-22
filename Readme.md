@@ -112,3 +112,27 @@ Feature engineering is a crucial step in preparing the dataset for machine learn
 
 The feature engineering process involved handling missing values, one-hot encoding categorical features, normalizing the purchase label, and performing feature selection. These steps were essential in preparing the data for the machine learning model, ensuring that the features are in a suitable format for training. By transforming the raw data into meaningful features and selecting the most relevant ones, we enhanced the model's ability to accurately predict customer purchase amounts, contributing to more effective marketing strategies and increased profits.
 
+## Data Preprocessing and the Data Pipeline
+
+The data preprocessing pipeline is designed to transform raw data into a format suitable for model training and serving. This pipeline ensures that the data is cleaned, transformed, and standardized, making it ready for the machine learning model. The preprocessing steps are encapsulated in a callable API to enable seamless integration with the production environment where the model will be served.
+
+### Data Ingestion
+The data ingestion step loads the raw data into the pipeline using the CsvExampleGen component. This component reads CSV files and splits the data into training, evaluation, and testing sets. The code snippet for this component is stored in `black_friday_pipeline/components/data_ingestion.py` 
+
+### Data Validation
+Data validation is performed using the StatisticsGen, SchemaGen, and ExampleValidator components. These components generate statistics, infer the schema, and validate the dataset against the schema to detect any anomalies or inconsistencies. The code snippet for this component is stored in `black_friday_pipeline/components/data_validation.py`
+
+### Data Transformation
+The data transformation step involves applying feature engineering techniques such as one-hot encoding for categorical features and normalization for the purchase label. This is accomplished using the Transform component, which ensures that the same transformations are applied during both training and serving.The code snippet for this component is stored in `black_friday_pipeline/components/data_transformation.py`
+
+### Callable API for Data Preprocessing
+The preprocessing steps are encapsulated in a function called preprocessing_fn, which is part of the data_transformation.py module. This function is called by the Transform component to apply the necessary transformations to the data. The Transform component ensures that the same preprocessing logic is applied during both training and serving, maintaining consistency and accuracy.
+
+### Integration with Production Model
+The preprocessed data is fed into the machine learning model using the Trainer component. The preprocessing function is accessed by the served production model through the TFX Transform component. This integration ensures that the model receives data in the correct format, both during training and when making predictions in production.
+
+### Conclusion
+The data preprocessing pipeline involves multiple steps, including data ingestion, validation, and transformation. These steps are encapsulated in a callable API, enabling seamless integration with the production environment. By ensuring consistent data preprocessing during both training and serving, the pipeline contributes to the accuracy and reliability of the machine learning model.
+
+
+
