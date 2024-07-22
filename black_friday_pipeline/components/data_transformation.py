@@ -77,22 +77,8 @@ def preprocessing_fn(inputs):
     for key in _CATEGORICAL_STRING_FEATURES:
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
-    # outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
+    outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
 
-    outputs[_LABEL_KEY] = inputs[_LABEL_KEY]
-
-    # for key in _FEATURE_KEYS:
-    #     outputs[key] = inputs[key]
-
-    # outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
-
-    # outputs['Gender'] = tft.compute_and_apply_vocabulary(inputs['Gender'])
-    # outputs['Age'] = tft.compute_and_apply_vocabulary(inputs['Age'])
-    # outputs['City_Category'] = tft.compute_and_apply_vocabulary(inputs['City_Category'])
-    # outputs['Product_Category_2'] =  tft.sparse_tensor_to_dense_with_shape(inputs['Product_Category_2'], default_value=-1, shape=[None, 1])
-    # outputs['Product_Category_3'] = tft.sparse_tensor_to_dense_with_shape(inputs['Product_Category_3'], default_value=-1, shape=[None, 1])
-    # outputs['Stay_In_Current_City_Years'] = tft.compute_and_apply_vocabulary(inputs['Stay_In_Current_City_Years'])
-    # outputs['Occupation'] = tft.compute_and_apply_vocabulary(inputs['Occupation'])
     return outputs
 
 

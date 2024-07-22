@@ -47,6 +47,8 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
     outputs = model(transformed_features)
     # TODO(b/154085620): Convert the predicted labels from the model using a
     # reverse-lookup (opposite of transform.py).
+    outputs = tf_transform_output.inverse_transform(outputs, 'Purchase')
+
     return {'outputs': outputs}
 
   return serve_tf_examples_fn
@@ -141,39 +143,6 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 
-
-
-# def _build_keras_model(tf_transform_output: TFTransformOutput
-#                        ) -> tf.keras.Model:
-#     """Creates a CNN Keras model for predicting purchase amount in Black Friday data.
-
-#     Returns:
-#         A Keras Model.
-#     """
-
-#     feature_spec = tf_transform_output.transformed_feature_spec().copy()
-#     feature_spec.pop(_LABEL_KEY)
-
-#     inputs = {}
-#     for key, spec in feature_spec.items():
-#         if isinstance(spec, tf.io.VarLenFeature):
-#             inputs[key] = tf.keras.layers.Input(
-#                 shape=[None], name=key, dtype=spec.dtype, sparse=True)
-#         elif isinstance(spec, tf.io.FixedLenFeature):
-#             inputs[key] = tf.keras.layers.Input(
-#                 shape=spec.shape or [1], name=key, dtype=spec.dtype)
-#         else:
-#             raise ValueError('Spec type is not supported: ', key, spec)
-        
-
-#     # Concatenate inputs to create a single input tensor
-#     output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
-#     output = tf.keras.layers.Dense(100, activation='relu')(output)
-#     output = tf.keras.layers.Dense(70, activation='relu')(output)
-#     output = tf.keras.layers.Dense(50, activation='relu')(output)
-#     output = tf.keras.layers.Dense(20, activation='relu')(output)
-#     output = tf.keras.layers.Dense(1)(output)
-#     return tf.keras.Model(inputs=inputs, outputs=output)
 
 def run_fn(fn_args):
    """Train the model based on given args.
