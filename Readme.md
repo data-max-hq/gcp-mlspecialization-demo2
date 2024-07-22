@@ -87,3 +87,28 @@ Ensured that the model can accommodate the processed data format, leading to bet
 ### Conclusion
 The data exploration process provided a foundational understanding of the dataset and informed critical decisions regarding data preprocessing and model architecture. By leveraging TFDV and the TFX pipeline components, we ensured that the dataset was thoroughly analyzed and preprocessed, leading to a robust and effective machine learning solution.
 
+## Feature Engineering
+
+Feature engineering is a crucial step in preparing the dataset for machine learning. It involves transforming raw data into meaningful features that improve the performance of the machine learning model. In this project, we performed several feature engineering tasks to convert the raw features into a suitable format for the model.
+
+### Feature Engineering Performed
+
+1. Handling Missing Values:
+* We replaced missing values in the dataset with default values to ensure that the model training process is not affected by missing data.
+
+2. One-Hot Encoding:
+* We applied one-hot encoding to categorical features to convert them into a numerical format. This process involves creating binary vectors that represent the presence of each category.
+* Categorical features were divided into two groups:
+  - Categorical Numerical Feature
+  - Categorical String Features
+
+3. Normalization:
+* We normalized the Purchase feature to ensure that its wide range of values does not bias the model. Normalization helps in scaling the data to have a mean of 0 and a standard deviation of 1.
+
+4. Feature Selection:
+* We performed feature selection to focus on the most relevant features for the business use case. We dismissed user_id and product_id as they do not add business value to the prediction of purchase amounts and may not be present at prediction time. This decision helps in simplifying the model and ensuring it generalizes well to unseen data.
+
+### Conclusion
+
+The feature engineering process involved handling missing values, one-hot encoding categorical features, normalizing the purchase label, and performing feature selection. These steps were essential in preparing the data for the machine learning model, ensuring that the features are in a suitable format for training. By transforming the raw data into meaningful features and selecting the most relevant ones, we enhanced the model's ability to accurately predict customer purchase amounts, contributing to more effective marketing strategies and increased profits.
+
