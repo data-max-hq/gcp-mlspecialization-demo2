@@ -134,5 +134,95 @@ The preprocessed data is fed into the machine learning model using the Trainer c
 ### Conclusion
 The data preprocessing pipeline involves multiple steps, including data ingestion, validation, and transformation. These steps are encapsulated in a callable API, enabling seamless integration with the production environment. By ensuring consistent data preprocessing during both training and serving, the pipeline contributes to the accuracy and reliability of the machine learning model.
 
+## Machine Learning Model Design and Selection
+
+### Machine Learning Model Selection
+For this project, we selected a Convolutional Neural Network (CNN) model for predicting the purchase amounts during Black Friday sales. The decision to use a CNN model was based on several criteria aimed at achieving high accuracy and robustness in predictions.
+
+#### Criteria for Model Selection
+
+1. Data Characteristics:
+
+- The dataset contains various categorical and numerical features that can benefit from the hierarchical feature extraction capabilities of CNNs.
+
+2. Predictive Performance:
+
+- CNNs are known for their ability to capture complex patterns and interactions in the data, which is essential for accurately predicting purchase amounts.
+
+3. Scalability:
+
+- The model needs to handle large volumes of data efficiently. CNNs, with their parallel processing capabilities, are well-suited for this requirement.
+
+4. Previous Success:
+
+- CNNs have been successfully applied in similar use cases, providing a strong justification for their selection in this project.
+
+5. Ease of Integration:
+
+- The model should be easily integrable into the existing TFX pipeline, allowing for seamless data preprocessing, training, evaluation, and serving.
+
+### Model Design and Training
+The model design and training process involves defining the CNN architecture, compiling the model, and training it using the transformed dataset. Key aspects of the training process include:
+
+1.  Model Architecture:
+
+  - The CNN model consists of multiple dense layers to capture the complex relationships between the input features.
+  - Input layers are created based on the transformed feature specifications.
+  - Dense layers with ReLU activation functions are used to introduce non-linearity and learn complex patterns.
+  - The output layer is a single neuron that predicts the purchase amount.
+
+2. Optimizer and Learning Rate:
+
+  - The Adam optimizer is used for training the model due to its efficiency and adaptability in handling sparse gradients.
+  - An exponential decay schedule is applied to the learning rate, starting at 0.1 and decaying by a factor of 0.9 every 1000 steps. This helps in stabilizing the training process and improving convergence.
+
+3. Early Stopping:
+
+  - Early stopping is implemented to monitor the validation loss and stop training if the model's performance does not improve for 5 consecutive epochs. This prevents overfitting and saves computational resources.
+
+4. Training Steps:
+
+  - The model is trained for a maximum of 50,000 steps with an evaluation step every 10,000 steps. This ensures that the model is adequately trained and evaluated periodically.
+
+5. Callbacks:
+
+  - TensorBoard callbacks are used to monitor the training process and log metrics for visualization.
+
+The code snippet for model design and training can be found on `black_friday_pipeline/components/model_trainer.py` 
+
+
+### Model Evaluation and Pushing
+The evaluation of the trained model is performed using the Evaluator component, which measures the model's performance on the test dataset. The evaluation criteria include metrics such as Root Mean Squared Error (RMSE). The code snippet for model evaluation can be found on `black_friday_pipeline/components/model_evaluator_and_pusher.py` 
+
+
+
+## Machine learning model evaluation
+
+After training and optimizing the machine learning model, it is crucial to evaluate its performance on an independent test dataset. This ensures that the model generalizes well to new, unseen data, which reflects the distribution it is expected to encounter in a production environment.
+
+### Evaluation Process
+The evaluation process involves several steps:
+
+1. Evaluation Configuration:
+
+  - An evaluation configuration is set up to specify the evaluation metrics and slicing specifications. For this project, the primary metric used is Root Mean Squared Error (RMSE), which is appropriate for regression tasks.
+
+2. Model Resolver:
+
+  - A model resolver is used to ensure that the latest blessed model is selected as the baseline for comparison during evaluation. This allows for a continuous improvement cycle by comparing new models against the best-performing previously deployed models.
+
+3. Evaluator Component:
+
+  - The Evaluator component of TFX is used to assess the model's performance on the independent test dataset. This component computes the specified metrics and generates detailed evaluation reports.
+
+4. Independent Test Dataset:
+
+  - The model is evaluated on an independent test dataset that reflects the distribution of data expected in a production environment. This dataset is kept separate from the training and validation datasets to provide an unbiased assessment of the model's performance.
+
+### Evaluation Metrics
+The primary evaluation metric for this project is Root Mean Squared Error (RMSE). RMSE measures the average magnitude of the errors between the predicted and actual purchase amounts, providing a clear indication of the model's predictive accuracy.
+
+### Evaluation Results
+The evaluation results are derived from the Evaluator component and provide insights into how well the model performs on the independent test dataset. The key metric, RMSE, is used to measure the prediction accuracy. If the model has a better result in the key metric that the one defined on the threshold, the Evaluator "blesses" the model and the Pusher component registers and deployes it in an Vertex AI endpoint. The code for the Evaluator and Pusher are stored in `black_friday_pipeline/components/model_evaluator_and_pusher.py`.
 
 

@@ -83,7 +83,6 @@ def preprocessing_fn(inputs):
     # outputs['Purchase_mean'] = tft.mean(inputs[_LABEL_KEY])
     # outputs['Purchase_var'] = tft.var(inputs[_LABEL_KEY])
 
-
     return outputs
 
 

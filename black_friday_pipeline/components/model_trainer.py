@@ -2,6 +2,7 @@ from tfx.components import Trainer
 from tfx.proto import trainer_pb2
 from tfx import v1 as tfx
 import tensorflow as tf
+import tensorflow_transform as tft
 from tensorflow_transform import TFTransformOutput
 from tfx_bsl.public import tfxio
 
@@ -145,17 +146,6 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 
-def get_pre_transform_stats(pre_transform_stats_uri):
-    stats = tfxio.BeamDataset(pre_transform_stats_uri).read_records()
-    for record in stats:
-        if 'Purchase' in record:
-            mean = record['Purchase']['mean']
-            var = record['Purchase']['var']
-            std = tf.sqrt(var)
-            return mean, std
-    raise ValueError("Purchase statistics not found in pre_transform_stats.")
-
-
 def run_fn(fn_args):
    """Train the model based on given args.
 
@@ -166,7 +156,9 @@ def run_fn(fn_args):
    print("TF Transform output:", tf_transform_output)
 
     # Extract mean and variance for 'Purchase'
-   purchase_mean, purchase_std = get_pre_transform_stats(fn_args.custom_config['pre_transform_stats'])
+   purchase_mean = tft.mean(tf_transform_output.transformed_feature_spec()[_LABEL_KEY])
+   purchase_var = tft.var(tf_transform_output.transformed_feature_spec()[_LABEL_KEY])
+   purchase_std = tf.sqrt(purchase_var)
 
    train_dataset = input_fn(
        fn_args.train_files,
