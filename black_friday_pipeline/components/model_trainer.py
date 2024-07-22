@@ -20,6 +20,7 @@ GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
 _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
+_TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
 def _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean, purchase_std):
   """Returns a serving signature that accepts `tensorflow.Example`."""
@@ -122,8 +123,12 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
         A Keras Model.
     """
 
-    feature_spec = tf_transform_output.transformed_feature_spec().copy()
-    feature_spec.pop(_LABEL_KEY)
+    # feature_spec = tf_transform_output.transformed_feature_spec().copy()
+    # feature_spec.pop(_LABEL_KEY)
+
+    feature_spec = {
+        k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
+    }
 
     inputs = {}
     for key, spec in feature_spec.items():
@@ -160,12 +165,15 @@ def run_fn(fn_args):
    purchase_var = tft.var(tf_transform_output.transformed_feature_spec()[_LABEL_KEY])
    purchase_std = tf.sqrt(purchase_var)
 
+   required_feature_spec = {
+        k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
+    }
    train_dataset = input_fn(
        fn_args.train_files,
-       tf_transform_output)
+       required_feature_spec)
    eval_dataset = input_fn(
        fn_args.eval_files,
-       tf_transform_output)
+       required_feature_spec)
 
    model = _build_keras_model(tf_transform_output)
 
