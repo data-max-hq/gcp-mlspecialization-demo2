@@ -161,9 +161,8 @@ def run_fn(fn_args):
    print("TF Transform output:", tf_transform_output)
 
     # Extract mean and variance for 'Purchase'
-   purchase_mean = tft.mean(tf_transform_output.transformed_feature_spec()[_LABEL_KEY])
-   purchase_var = tft.var(tf_transform_output.transformed_feature_spec()[_LABEL_KEY])
-   purchase_std = tf.sqrt(purchase_var)
+   purchase_mean = tf_transform_output.transformed_metadata.schema.column_schemas[_LABEL_KEY].domain.mapped_feature_stats['mean']
+   purchase_std = tf_transform_output.transformed_metadata.schema.column_schemas[_LABEL_KEY].domain.mapped_feature_stats['std']
 
    required_feature_spec = {
         k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
