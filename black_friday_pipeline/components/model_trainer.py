@@ -3,6 +3,8 @@ from tfx.proto import trainer_pb2
 from tfx import v1 as tfx
 import tensorflow as tf
 from tensorflow_transform import TFTransformOutput
+from tfx_bsl.public import tfxio
+
 
 from absl import logging
 
@@ -143,6 +145,16 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 
+def get_pre_transform_stats(pre_transform_stats_uri):
+    stats = tfxio.BeamDataset(pre_transform_stats_uri).read_records()
+    for record in stats:
+        if 'Purchase' in record:
+            mean = record['Purchase']['mean']
+            var = record['Purchase']['var']
+            std = tf.sqrt(var)
+            return mean, std
+    raise ValueError("Purchase statistics not found in pre_transform_stats.")
+
 
 def run_fn(fn_args):
    """Train the model based on given args.
@@ -154,9 +166,7 @@ def run_fn(fn_args):
    print("TF Transform output:", tf_transform_output)
 
     # Extract mean and variance for 'Purchase'
-   purchase_mean = tf_transform_output.transform_features_layer().mean('Purchase')
-   purchase_var = tf_transform_output.transform_features_layer().var('Purchase')
-   purchase_std = tf.sqrt(purchase_var)
+   purchase_mean, purchase_std = get_pre_transform_stats(fn_args.custom_config['pre_transform_stats'])
 
    train_dataset = input_fn(
        fn_args.train_files,
@@ -204,14 +214,16 @@ def create_trainer(transform, schema_gen,module_file):
             'ai_platform_training_args': {
                 'project': GOOGLE_CLOUD_PROJECT,
                 'region': GOOGLE_CLOUD_REGION,
-                'job-dir': f'{GCS_BUCKET_NAME}/jobs'
+                'job-dir': f'{GCS_BUCKET_NAME}/jobs',
+                'pre_transform_stats': transform.outputs['pre_transform_stats']
             }
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
         train_args=trainer_pb2.TrainArgs(num_steps=50000),
-        eval_args=trainer_pb2.EvalArgs(num_steps=10000)
+        eval_args=trainer_pb2.EvalArgs(num_steps=10000),
+
     )
 
 
