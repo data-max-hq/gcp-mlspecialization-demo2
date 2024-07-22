@@ -215,7 +215,7 @@ def create_trainer(transform, schema_gen,module_file):
                 'project': GOOGLE_CLOUD_PROJECT,
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs',
-                'pre_transform_stats': transform.outputs['pre_transform_stats']
+                'pre_transform_stats': transform.outputs['pre_transform_stats'].uri
             }
         },
         transformed_examples=transform.outputs['transformed_examples'],
