@@ -79,11 +79,7 @@ def preprocessing_fn(inputs):
     for key in _CATEGORICAL_STRING_FEATURES:
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
-    outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
-    batch_size = tf.shape(input=inputs[_LABEL_KEY])[0]
-
-    def feature_from_scalar(value):
-      return tf.tile(tf.expand_dims(value, 0), multiples=[batch_size])
+    outputs[_LABEL_KEY] = inputs[_LABEL_KEY]
 
     return outputs
 
