@@ -161,8 +161,8 @@ def run_fn(fn_args):
    print("TF Transform output:", tf_transform_output)
 
     # Extract mean and variance for 'Purchase'
-   purchase_mean = tf_transform_output.transform_features_layer().mean('Purchase')
-   purchase_var = tf_transform_output.transform_features_layer().var('Purchase')
+   purchase_mean = tf_transform_output["label_mean"]
+   purchase_var = tf_transform_output["label_var"]
    purchase_std = tf.sqrt(purchase_var)
     
    required_feature_spec = {

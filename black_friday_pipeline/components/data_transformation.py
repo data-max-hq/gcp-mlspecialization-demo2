@@ -66,6 +66,8 @@ def _make_one_hot(x, key):
       off_value=0.0)
   return tf.reshape(one_hot_encoded, [-1, depth])
 
+
+
 def preprocessing_fn(inputs):
 
     outputs = {}
@@ -78,12 +80,16 @@ def preprocessing_fn(inputs):
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
     outputs[_LABEL_KEY] = tft.scale_to_z_score(inputs[_LABEL_KEY])
+    batch_size = tf.shape(input=inputs[_LABEL_KEY])[0]
 
-    
+    def feature_from_scalar(value):
+      return tf.tile(tf.expand_dims(value, 0), multiples=[batch_size])
 
-    # Store the mean and variance for inverse transformation
-    outputs['Purchase_mean'] = tft.mean(inputs[_LABEL_KEY])
-    outputs['Purchase_var'] = tft.var(inputs[_LABEL_KEY])
+    label_mean = tft.mean(inputs[_LABEL_KEY])
+    label_var = tft.var(inputs[_LABEL_KEY])
+
+    outputs['label_mean'] = feature_from_scalar(label_mean)
+    outputs['label_var'] = feature_from_scalar(label_var)
 
     return outputs
 
