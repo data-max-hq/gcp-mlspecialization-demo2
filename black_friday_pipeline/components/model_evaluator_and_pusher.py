@@ -55,17 +55,17 @@ serving_image = "europe-docker.pkg.dev/vertex-ai-restricted/prediction/tf_opt-cp
 
 def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
 
-    model_resolver = tfx.dsl.Resolver(
-    strategy_class=tfx.dsl.experimental.LatestBlessedModelStrategy,
-    model=tfx.dsl.Channel(type=tfx.types.standard_artifacts.Model),
-    model_blessing=tfx.dsl.Channel(
-        type=tfx.types.standard_artifacts.ModelBlessing)).with_id(
-            'latest_blessed_model_resolver')
+    # model_resolver = tfx.dsl.Resolver(
+    # strategy_class=tfx.dsl.experimental.LatestBlessedModelStrategy,
+    # model=tfx.dsl.Channel(type=tfx.types.standard_artifacts.Model),
+    # model_blessing=tfx.dsl.Channel(
+    #     type=tfx.types.standard_artifacts.ModelBlessing)).with_id(
+    #         'latest_blessed_model_resolver')
 
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
-        baseline_model=model_resolver.outputs['model'],
+        # baseline_model=model_resolver.outputs['model'],
         eval_config=eval_config,
         example_splits=['test']
     )
@@ -83,4 +83,4 @@ def create_evaluator_and_pusher(example_gen, trainer, serving_model_dir):
           tfx.extensions.google_cloud_ai_platform.SERVING_ARGS_KEY:
             vertex_serving_spec,
       })
-    return evaluator, pusher, model_resolver
+    return evaluator, pusher
