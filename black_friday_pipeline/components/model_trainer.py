@@ -23,7 +23,7 @@ _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
-def _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean, purchase_std):
+def _get_tf_examples_serving_signature(model, tf_transform_output):
   """Returns a serving signature that accepts `tensorflow.Example`."""
 
   # We need to track the layers in the model in order to save it.
@@ -52,8 +52,6 @@ def _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean
     outputs = model(transformed_features)
     # TODO(b/154085620): Convert the predicted labels from the model using a
     # reverse-lookup (opposite of transform.py).
-    outputs = (outputs * purchase_std) + purchase_mean
-
     return {'outputs': outputs}
 
   return serve_tf_examples_fn
@@ -97,7 +95,7 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
 
         return dataset
 
-def export_serving_model(tf_transform_output, model, output_dir, purchase_mean, purchase_std):
+def export_serving_model(tf_transform_output, model, output_dir):
   """Exports a keras model for serving.
   Args:
     tf_transform_output: Wrapper around output of tf.Transform.
@@ -109,7 +107,7 @@ def export_serving_model(tf_transform_output, model, output_dir, purchase_mean, 
 
   signatures = {
       'serving_default':
-          _get_tf_examples_serving_signature(model, tf_transform_output, purchase_mean, purchase_std),
+          _get_tf_examples_serving_signature(model, tf_transform_output),
       'transform_features':
           _get_transform_features_signature(model, tf_transform_output),
   }
@@ -160,33 +158,12 @@ def run_fn(fn_args):
    """
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
-   print("pre_transform_stats object:", fn_args.custom_config['stats'])
-
-   print("Pre Transform Stats URI:", fn_args.custom_config['stats'][0].uri)
-
-   pre_transform_stats_uri = fn_args.custom_config['stats'][0].uri+'/FeatureStats.pb'
-
-   fs = gcsfs.GCSFileSystem()
-   with fs.open(pre_transform_stats_uri, 'rb') as f:
-         stats_proto = f.read()
-
-   dataset_feature_statistics_list = statistics_pb2.DatasetFeatureStatisticsList()
-   dataset_feature_statistics_list.ParseFromString(stats_proto)
-
-   for feature in dataset_feature_statistics_list.datasets[0].features:
-    if feature.path.step[0] == 'Purchase':
-        purchase_mean = feature.num_stats.mean
-        purchase_std = feature.num_stats.std_dev
-    
-   required_feature_spec = {
-        k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
-    }
    train_dataset = input_fn(
        fn_args.train_files,
-       required_feature_spec)
+       tf_transform_output)
    eval_dataset = input_fn(
        fn_args.eval_files,
-       required_feature_spec)
+       tf_transform_output)
 
    model = _build_keras_model(tf_transform_output)
 
@@ -215,11 +192,9 @@ def run_fn(fn_args):
       validation_steps=fn_args.eval_steps,
       callbacks=[tensorboard_callback, early_stopping])
    # Ensure the transformation layer is saved with the model
-   export_serving_model(tf_transform_output, model, fn_args.serving_model_dir, purchase_mean, purchase_std)
+   export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)
 
-def create_trainer(transform,statistics_gen, schema_gen,module_file):
-
-    print("Pre Transform URI: ", statistics_gen.outputs['statistics'].get())
+def create_trainer(transform, schema_gen,module_file):
 
     return Trainer(
         module_file=module_file, 
@@ -229,9 +204,7 @@ def create_trainer(transform,statistics_gen, schema_gen,module_file):
                 'project': GOOGLE_CLOUD_PROJECT,
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs'
-            },
-            'stats': statistics_gen.outputs['statistics']._artifacts
-        },
+            }        },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
