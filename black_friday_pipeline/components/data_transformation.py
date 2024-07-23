@@ -85,12 +85,6 @@ def preprocessing_fn(inputs):
     def feature_from_scalar(value):
       return tf.tile(tf.expand_dims(value, 0), multiples=[batch_size])
 
-    label_mean = tft.mean(inputs[_LABEL_KEY])
-    label_var = tft.var(inputs[_LABEL_KEY])
-
-    outputs['label_mean'] = feature_from_scalar(label_mean)
-    outputs['label_var'] = feature_from_scalar(label_var)
-
     return outputs
 
 

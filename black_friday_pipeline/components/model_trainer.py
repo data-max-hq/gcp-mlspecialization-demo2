@@ -5,7 +5,8 @@ import tensorflow as tf
 import tensorflow_transform as tft
 from tensorflow_transform import TFTransformOutput
 from tfx_bsl.public import tfxio
-
+from tensorflow_metadata.proto.v0 import schema_pb2, anomalies_pb2, statistics_pb2
+import gcsfs
 
 from absl import logging
 
@@ -158,15 +159,22 @@ def run_fn(fn_args):
        fn_args: Holds args used to train the model as name/value pairs.
    """
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
-   print("TF Transform output:", tf_transform_output)
 
-   print("Pre Transform Statistic TEst: ", fn_args.custom_config['pre_transform_stats'])
-   print("Pre Transform Stat: ", tf_transform_output.transformed_metadata.schema)
+   print("Pre Transform Stats URI:", fn_args.custom_config['pre_transform_stats'])
 
-    # Extract mean and variance for 'Purchase'
-   purchase_mean = tf_transform_output["label_mean"]
-   purchase_var = tf_transform_output["label_var"]
-   purchase_std = tf.sqrt(purchase_var)
+   pre_transform_stats_uri = fn_args.custom_config['pre_transform_stats']+'/FeatureStats.pb'
+
+   fs = gcsfs.GCSFileSystem()
+   with fs.open(pre_transform_stats_uri, 'rb') as f:
+         stats_proto = f.read()
+
+   dataset_feature_statistics_list = statistics_pb2.DatasetFeatureStatisticsList()
+   dataset_feature_statistics_list.ParseFromString(stats_proto)
+
+   for feature in dataset_feature_statistics_list.datasets[0].features:
+    if feature.path.step[0] == 'Purchase':
+        purchase_mean = feature.num_stats.mean
+        purchase_std = feature.num_stats.std_dev
     
    required_feature_spec = {
         k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
@@ -218,7 +226,7 @@ def create_trainer(transform, schema_gen,module_file):
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             },
-            'pre_transform_stats': transform.outputs['pre_transform_stats']
+            'pre_transform_stats': transform.outputs['pre_transform_stats']._artifacts[0].uri
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
