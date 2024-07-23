@@ -215,9 +215,9 @@ def run_fn(fn_args):
    # Ensure the transformation layer is saved with the model
    export_serving_model(tf_transform_output, model, fn_args.serving_model_dir, purchase_mean, purchase_std)
 
-def create_trainer(transform, schema_gen,module_file):
+def create_trainer(transform,statistics_gen, schema_gen,module_file):
 
-    print("Pre Transform URI: ", transform.outputs['pre_transform_stats'].get())
+    print("Pre Transform URI: ", statistics_gen.outputs['statistics'].get())
 
     return Trainer(
         module_file=module_file, 
@@ -228,7 +228,7 @@ def create_trainer(transform, schema_gen,module_file):
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             },
-            'pre_transform_stats': transform.outputs['pre_transform_stats'].get()
+            'pre_transform_stats': statistics_gen.outputs['statistics'].get()
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
