@@ -160,6 +160,8 @@ def run_fn(fn_args):
    """
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
+   print("pre_transform_stats object:", fn_args.custom_config['pre_transform_stats'])
+
    print("Pre Transform Stats URI:", fn_args.custom_config['pre_transform_stats'][0].uri)
 
    pre_transform_stats_uri = fn_args.custom_config['pre_transform_stats'][0].uri+'/FeatureStats.pb'
@@ -211,7 +213,7 @@ def run_fn(fn_args):
       steps_per_epoch=fn_args.train_steps,
       validation_data=eval_dataset,
       validation_steps=fn_args.eval_steps,
-      callbacks=[tensorboard_callback, early_stopping],)
+      callbacks=[tensorboard_callback, early_stopping])
    # Ensure the transformation layer is saved with the model
    export_serving_model(tf_transform_output, model, fn_args.serving_model_dir, purchase_mean, purchase_std)
 
