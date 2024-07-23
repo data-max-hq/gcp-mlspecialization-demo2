@@ -234,7 +234,7 @@ def create_trainer(transform,statistics_gen, schema_gen,module_file):
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
-        transform_graph=transform.outputs['transform_graph'],
+        transform_graph=transform.outputs['transform_graph']._artifacts,
         train_args=trainer_pb2.TrainArgs(num_steps=50000),
         eval_args=trainer_pb2.EvalArgs(num_steps=10000),
 
