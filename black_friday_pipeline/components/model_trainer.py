@@ -230,11 +230,11 @@ def create_trainer(transform,statistics_gen, schema_gen,module_file):
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             },
-            'stats': statistics_gen.outputs['statistics']
+            'stats': statistics_gen.outputs['statistics']._artifacts
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
-        transform_graph=transform.outputs['transform_graph']._artifacts,
+        transform_graph=transform.outputs['transform_graph'],
         train_args=trainer_pb2.TrainArgs(num_steps=50000),
         eval_args=trainer_pb2.EvalArgs(num_steps=10000),
 
