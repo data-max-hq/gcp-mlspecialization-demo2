@@ -160,6 +160,9 @@ def run_fn(fn_args):
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
    print("TF Transform output:", tf_transform_output)
 
+   print("Pre Transform Statistic TEst: ", fn_args.custom_config['pre_transform_stats'])
+   print("Pre Transform Stat: ", tf_transform_output.transformed_metadata.schema)
+
     # Extract mean and variance for 'Purchase'
    purchase_mean = tf_transform_output["label_mean"]
    purchase_var = tf_transform_output["label_var"]
@@ -195,7 +198,6 @@ def run_fn(fn_args):
       log_dir=fn_args.model_run_dir, update_freq='batch')
    print("Training logs saved to: " + fn_args.model_run_dir)
    
-
    model.fit(
       train_dataset,
       steps_per_epoch=fn_args.train_steps,
