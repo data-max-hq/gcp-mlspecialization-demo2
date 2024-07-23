@@ -122,12 +122,8 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
         A Keras Model.
     """
 
-    # feature_spec = tf_transform_output.transformed_feature_spec().copy()
-    # feature_spec.pop(_LABEL_KEY)
-
-    feature_spec = {
-        k: v for k, v in tf_transform_output.items() if k in _TRANSFORM_FEATURE_KEYS
-    }
+    feature_spec = tf_transform_output.transformed_feature_spec().copy()
+    feature_spec.pop(_LABEL_KEY)
 
     inputs = {}
     for key, spec in feature_spec.items():
