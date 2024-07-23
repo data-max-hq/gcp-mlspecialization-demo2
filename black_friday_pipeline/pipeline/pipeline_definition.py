@@ -13,7 +13,7 @@ def create_pipeline(pipeline_name: str, pipeline_root: str, data_path: str, serv
     example_gen = create_example_gen(data_path)
     statistics_gen, schema_gen, example_validator = create_data_validation(example_gen)
     transform = create_transform(example_gen, schema_gen)
-    trainer = create_trainer(transform,statistics_gen, schema_gen, module_file)
+    trainer = create_trainer(transform, statistics_gen, schema_gen, module_file)
     evaluator, pusher, resolver = create_evaluator_and_pusher(example_gen, trainer, serving_model_dir)
 
     return pipeline.Pipeline(

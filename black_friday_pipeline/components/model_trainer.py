@@ -160,11 +160,11 @@ def run_fn(fn_args):
    """
    tf_transform_output = TFTransformOutput(fn_args.transform_output)
 
-   print("pre_transform_stats object:", fn_args.custom_config['pre_transform_stats'])
+   print("pre_transform_stats object:", fn_args.custom_config['stats'])
 
-   print("Pre Transform Stats URI:", fn_args.custom_config['pre_transform_stats'][0].uri)
+   print("Pre Transform Stats URI:", fn_args.custom_config['stats'][0].uri)
 
-   pre_transform_stats_uri = fn_args.custom_config['pre_transform_stats'][0].uri+'/FeatureStats.pb'
+   pre_transform_stats_uri = fn_args.custom_config['stats'][0].uri+'/FeatureStats.pb'
 
    fs = gcsfs.GCSFileSystem()
    with fs.open(pre_transform_stats_uri, 'rb') as f:
@@ -230,7 +230,7 @@ def create_trainer(transform,statistics_gen, schema_gen,module_file):
                 'region': GOOGLE_CLOUD_REGION,
                 'job-dir': f'{GCS_BUCKET_NAME}/jobs'
             },
-            'pre_transform_stats': statistics_gen.outputs['statistics'].get()
+            'stats': statistics_gen.outputs['statistics']
         },
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
