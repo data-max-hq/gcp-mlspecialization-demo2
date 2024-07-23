@@ -217,6 +217,8 @@ def run_fn(fn_args):
 
 def create_trainer(transform, schema_gen,module_file):
 
+    print("Pre Transform URI: ", transform.outputs['pre_transform_stats'].get()[0].uri)
+
     return Trainer(
         module_file=module_file, 
         # Adjust this path
