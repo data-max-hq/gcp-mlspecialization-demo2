@@ -142,7 +142,7 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
     x = tf.keras.layers.Dense(128, activation='relu')(x)
     x = tf.keras.layers.Dense(64, activation='relu')(x)
     x = tf.keras.layers.Dense(32, activation='relu')(x)
-    output = tf.keras.layers.Dense(1)(x)
+    output = tf.keras.layers.Dense(3, activation='softmax')(x)
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 
@@ -173,8 +173,8 @@ def run_fn(fn_args):
 
    model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
-        loss='mean_squared_error',  # Using MSE for regression
-        metrics=['mean_absolute_error']  # MAE as an additional metric
+        loss='categorical_crossentropy',  # Using MSE for regression
+        metrics=['accuracy']  # MAE as an additional metric
     )
 
    tensorboard_callback = tf.keras.callbacks.TensorBoard(
@@ -190,7 +190,7 @@ def run_fn(fn_args):
    # Ensure the transformation layer is saved with the model
    export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)
 
-def create_trainer(transform, schema_gen,module_file):
+def create_trainer(transform, schema_gen, module_file):
 
     return Trainer(
         module_file=module_file, 

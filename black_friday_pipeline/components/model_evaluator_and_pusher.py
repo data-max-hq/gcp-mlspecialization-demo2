@@ -18,21 +18,24 @@ eval_config = tfma.EvalConfig(
         # remove the label_key.
         tfma.ModelSpec(
             signature_name='serving_default',
-            label_key='Purchase',
+            label_key='Purchase_xf',
             preprocessing_function_names=['transform_features'],
             )
         ],
     slicing_specs=[
        tfma.SlicingSpec(),
-        tfma.SlicingSpec(feature_keys=['Gender']),
+       tfma.SlicingSpec(feature_keys=['Gender']),
         # tfma.SlicingSpec(feature_keys=['Age']),
         # tfma.SlicingSpec(feature_keys=['City_Category'])
     ],
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
-                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 10000}))),
-                tfma.MetricConfig(class_name='MeanAbsoluteError')                ])]
+                tfma.MetricConfig(class_name='CategoricalCrossentropy',
+                  threshold=tfma.MetricThreshold(
+                      value_threshold=tfma.GenericValueThreshold(
+                          lower_bound={'value': 0.1})))                                          
+                ])]
     )
 
 

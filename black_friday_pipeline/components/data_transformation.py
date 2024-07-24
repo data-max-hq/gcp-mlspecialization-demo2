@@ -1,5 +1,6 @@
 from tfx.components import Transform
 import tensorflow as tf
+import tensorflow_probability as tfp
 import tensorflow_transform as tft
 from tfx.proto import transform_pb2
 
@@ -66,6 +67,24 @@ def _make_one_hot(x, key):
       off_value=0.0)
   return tf.reshape(one_hot_encoded, [-1, depth])
 
+def calculate_quantiles(purchase):
+    q33 = tfp.stats.percentile(purchase, 33, interpolation='linear')
+    q66 = tfp.stats.percentile(purchase, 66, interpolation='linear')
+    return q33, q66
+
+def categorize_purchase_dynamic(purchase, q33, q66):
+    # Small spender: label 0
+    small_spender = tf.less(purchase, q33)
+    # Medium spender: label 1
+    medium_spender = tf.logical_and(tf.greater_equal(purchase, q33),
+                                    tf.less(purchase, q66))
+    # Big spender: label 2
+    big_spender = tf.greater_equal(purchase, q66)
+
+    # Convert boolean tensors to integers
+    label = tf.where(small_spender, 0, tf.where(medium_spender, 1, 2))
+    return label
+
 
 
 def preprocessing_fn(inputs):
@@ -79,7 +98,13 @@ def preprocessing_fn(inputs):
     for key in _CATEGORICAL_STRING_FEATURES:
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
-    outputs[_LABEL_KEY] = inputs[_LABEL_KEY]
+    # Calculate quantiles
+    q33, q66 = calculate_quantiles(inputs[_LABEL_KEY])
+
+    # Categorize purchase amount
+    outputs[t_name(_LABEL_KEY)] = categorize_purchase_dynamic(inputs[_LABEL_KEY], q33, q66)
+    
+    
 
     return outputs
 
