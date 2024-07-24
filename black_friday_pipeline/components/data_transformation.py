@@ -67,11 +67,17 @@ def _make_one_hot(x, key):
   return tf.reshape(one_hot_encoded, [-1, depth])
 
 def calculate_quantiles(purchase):
-    quantiles = tft.quantiles(purchase, num_buckets=3, epsilon=0.01)
-
-    print('quantiles:', quantiles)
-    q33 = quantiles[1]  # Approximate 33rd percentile
-    q66 = quantiles[2]  # Approximate 66th percentile
+    # Sort the tensor
+    sorted_purchase = tf.sort(purchase)
+    n = tf.size(sorted_purchase)
+    
+    # Find indices for the 33rd and 66th percentiles
+    idx33 = tf.cast(0.33 * tf.cast(n, tf.float32), tf.int32)
+    idx66 = tf.cast(0.66 * tf.cast(n, tf.float32), tf.int32)
+    
+    # Get the values at those indices
+    q33 = sorted_purchase[idx33]
+    q66 = sorted_purchase[idx66]
     return q33, q66
 
 def categorize_purchase_dynamic(purchase, q33, q66):
