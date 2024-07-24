@@ -19,7 +19,7 @@ GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 GOOGLE_CLOUD_REGION = os.getenv("GOOGLE_CLOUD_REGION")
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
-_LABEL_KEY = 'Purchase'
+_LABEL_KEY = 'Purchase_xf'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
