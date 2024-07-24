@@ -204,8 +204,8 @@ def create_trainer(transform, schema_gen, module_file):
         transformed_examples=transform.outputs['transformed_examples'],
         schema=schema_gen.outputs['schema'],
         transform_graph=transform.outputs['transform_graph'],
-        train_args=trainer_pb2.TrainArgs(num_steps=500),
-        eval_args=trainer_pb2.EvalArgs(num_steps=100),
+        train_args=trainer_pb2.TrainArgs(num_steps=10000),
+        eval_args=trainer_pb2.EvalArgs(num_steps=2000),
 
     )
 

@@ -34,7 +34,8 @@ eval_config = tfma.EvalConfig(
                 tfma.MetricConfig(class_name='CategoricalCrossentropy',
                   threshold=tfma.MetricThreshold(
                       value_threshold=tfma.GenericValueThreshold(
-                          lower_bound={'value': 0.1})))                                          
+                          lower_bound={'value': 0.1}))),
+                tfma.MetricConfig(class_name='FairnessIndicators')                                                    
                 ])]
     )
 
