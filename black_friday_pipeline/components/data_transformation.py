@@ -91,7 +91,7 @@ def categorize_purchase_dynamic(purchase, q33, q66):
 
     # Convert boolean tensors to integers
     label = tf.where(small_spender, 0, tf.where(medium_spender, 1, 2))
-    return label
+    return tf.cast(label, tf.float32)
 
 
 
