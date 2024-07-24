@@ -66,7 +66,7 @@ def _make_one_hot(x, key):
       off_value=0.0)
   return tf.reshape(one_hot_encoded, [-1, depth])
 
-def calculate_quantiles_tft(purchase):
+def calculate_quantiles(purchase):
     quantiles = tft.quantiles(purchase, num_buckets=3, epsilon=0.01)
     q33 = quantiles[1]  # Approximate 33rd percentile
     q66 = quantiles[2]  # Approximate 66th percentile
