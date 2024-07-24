@@ -1,6 +1,5 @@
 from tfx.components import Transform
 import tensorflow as tf
-import tensorflow_probability as tfp
 import tensorflow_transform as tft
 from tfx.proto import transform_pb2
 
@@ -67,9 +66,10 @@ def _make_one_hot(x, key):
       off_value=0.0)
   return tf.reshape(one_hot_encoded, [-1, depth])
 
-def calculate_quantiles(purchase):
-    q33 = tfp.stats.percentile(purchase, 33, interpolation='linear')
-    q66 = tfp.stats.percentile(purchase, 66, interpolation='linear')
+def calculate_quantiles_tft(purchase):
+    quantiles = tft.quantiles(purchase, num_buckets=3, epsilon=0.01)
+    q33 = quantiles[1]  # Approximate 33rd percentile
+    q66 = quantiles[2]  # Approximate 66th percentile
     return q33, q66
 
 def categorize_purchase_dynamic(purchase, q33, q66):
@@ -103,7 +103,7 @@ def preprocessing_fn(inputs):
 
     # Categorize purchase amount
     outputs[t_name(_LABEL_KEY)] = categorize_purchase_dynamic(inputs[_LABEL_KEY], q33, q66)
-    
+
     
 
     return outputs
