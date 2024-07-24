@@ -32,9 +32,7 @@ eval_config = tfma.EvalConfig(
         tfma.MetricsSpec(
             metrics=[
                 tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 10000}))),
-                tfma.MetricConfig(class_name='MeanAbsoluteError'),
-                tfma.MetricConfig(class_name='R2'),
-                ])]
+                tfma.MetricConfig(class_name='MeanAbsoluteError')                ])]
     )
 
 
