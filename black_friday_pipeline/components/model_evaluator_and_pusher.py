@@ -25,14 +25,14 @@ eval_config = tfma.EvalConfig(
     slicing_specs=[
        tfma.SlicingSpec(),
         tfma.SlicingSpec(feature_keys=['Gender']),
-        tfma.SlicingSpec(feature_keys=['Age']),
-        tfma.SlicingSpec(feature_keys=['City_Category'])
+        # tfma.SlicingSpec(feature_keys=['Age']),
+        # tfma.SlicingSpec(feature_keys=['City_Category'])
     ],
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
                 tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 10000}))),
-                # tfma.MetricConfig(class_name='FairnessIndicators'),
+                tfma.MetricConfig(class_name='FairnessIndicators'),
                 ])]
     )
 

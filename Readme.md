@@ -225,4 +225,22 @@ The primary evaluation metric for this project is Root Mean Squared Error (RMSE)
 ### Evaluation Results
 The evaluation results are derived from the Evaluator component and provide insights into how well the model performs on the independent test dataset. The key metric, RMSE, is used to measure the prediction accuracy. If the model has a better result in the key metric that the one defined on the threshold, the Evaluator "blesses" the model and the Pusher component registers and deployes it in an Vertex AI endpoint. The code for the Evaluator and Pusher are stored in `black_friday_pipeline/components/model_evaluator_and_pusher.py`.
 
+## Fairness Analysis
 
+When developing a profit maximization model based on the Black Friday dataset for targeted marketing, it is essential to consider the potential fairness and bias implications. Including purchaser demographics such as age, gender, and city category in the model can lead to biases that disproportionately favor certain groups, resulting in discriminatory marketing practices. This section discusses the implications, methods to detect bias, and strategies to mitigate it.
+
+### Evaluating Model Fairness
+
+To evaluate the fairness of the model, we used the following approach:
+
+1. Fairness Indicators:
+
+  - Fairness indicators were included as evaluation metrics to assess the model's performance across different demographic groups. This involved calculating metrics like Root Mean Squared Error (RMSE) separately for each group to identify any disparities in performance.
+
+2. Comparative Analysis:
+
+  - The model's performance was evaluated based on splits for gender, city category, and age features. This helped in identifying whether the model's predictions were biased towards any specific demographic group.
+
+
+
+ 
