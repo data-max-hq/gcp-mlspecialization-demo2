@@ -136,13 +136,12 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
         else:
             raise ValueError('Spec type is not supported: ', key, spec)
           
-    x = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
-    x = tf.keras.layers.Dense(512, activation='relu')(x)
-    x = tf.keras.layers.Dense(256, activation='relu')(x)
-    x = tf.keras.layers.Dense(128, activation='relu')(x)
-    x = tf.keras.layers.Dense(64, activation='relu')(x)
-    x = tf.keras.layers.Dense(32, activation='relu')(x)
-    output = tf.keras.layers.Dense(3, activation='softmax')(x)
+    output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
+    output = tf.keras.layers.Dense(100, activation='relu')(output)
+    output = tf.keras.layers.Dense(70, activation='relu')(output)
+    output = tf.keras.layers.Dense(50, activation='relu')(output)
+    output = tf.keras.layers.Dense(20, activation='relu')(output)
+    output = tf.keras.layers.Dense(3, activation='softmax')(output)
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 
@@ -172,7 +171,7 @@ def run_fn(fn_args):
         decay_rate=0.9)
 
    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
         loss='categorical_crossentropy',  # Using MSE for regression
         metrics=['accuracy']  # MAE as an additional metric
     )
