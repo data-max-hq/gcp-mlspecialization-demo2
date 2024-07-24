@@ -93,6 +93,8 @@ def categorize_purchase_dynamic(purchase, q33, q66):
     label = tf.where(small_spender, 0, tf.where(medium_spender, 1, 2))
     # One-hot encode the labels
     label = tf.one_hot(label, depth=3)
+    # Remove the extra dimension to match the expected shape
+    label = tf.squeeze(label, axis=1)
     return tf.cast(label, tf.float32)
 
 
