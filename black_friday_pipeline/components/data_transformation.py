@@ -68,6 +68,8 @@ def _make_one_hot(x, key):
 
 def calculate_quantiles(purchase):
     quantiles = tft.quantiles(purchase, num_buckets=3, epsilon=0.01)
+
+    print('quantiles:', quantiles)
     q33 = quantiles[1]  # Approximate 33rd percentile
     q66 = quantiles[2]  # Approximate 66th percentile
     return q33, q66
