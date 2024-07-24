@@ -110,7 +110,7 @@ def preprocessing_fn(inputs):
     q33, q66 = calculate_quantiles(inputs[_LABEL_KEY])
 
     # Categorize purchase amount
-    outputs[t_name(_LABEL_KEY)] = categorize_purchase_dynamic(inputs[_LABEL_KEY], q33, q66)
+    outputs[_LABEL_KEY] = categorize_purchase_dynamic(inputs[_LABEL_KEY], q33, q66)
 
     
 
