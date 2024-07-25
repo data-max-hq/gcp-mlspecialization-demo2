@@ -23,16 +23,21 @@ _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
-AGE_GROUP_WEIGHTS = {
-    '0-17': 2.0, # 2x weight for this group
-    '18-25': 1.0,
-    '26-35': 1.0,
-    '36-45': 1.0,
-    '46-50': 1.0,
-    '51-55': 1.0,
-    '55+': 1.5,   # 1.5x weight for this group
+AGE_GROUP_INDICES = {
+    '0-17': 0,
+    '18-25': 1,
+    '26-35': 2,
+    '36-45': 3,
+    '46-50': 4,
+    '51-55': 5,
+    '55+': 6
 }
 
+AGE_GROUP_WEIGHTS = {
+    0: 2.0,  # Weight for '0-17'
+    6: 1.5,  # Weight for '55+'
+    # Default weight is 1.0 for other groups
+}
 
 def _get_tf_examples_serving_signature(model, tf_transform_output):
   """Returns a serving signature that accepts `tensorflow.Example`."""
@@ -106,14 +111,19 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
 
 
         def add_sample_weights(features, label):
-            # Extract the 'Age' feature (or any feature you're weighting by)
-            age = features['Age_xf']
-            # Map the age to the corresponding weight
+            # Extract the 'Age_xf' one-hot encoded feature
+            age_one_hot = features['Age_xf']
+
+            # Determine the index of the active age category in the one-hot vector
+            age_index = tf.argmax(age_one_hot, axis=1, output_type=tf.int32)
+
+            # Map the index to the appropriate weight
             sample_weight = tf.map_fn(
-                lambda x: AGE_GROUP_WEIGHTS.get(x, 1.0),  # Default weight is 1.0 if not found
-                age,
+                lambda idx: AGE_GROUP_WEIGHTS.get(idx, 1.0),  # Default weight is 1.0
+                age_index,
                 dtype=tf.float32
             )
+    
             return features, label, sample_weight
         
         dataset = dataset.map(add_sample_weights)

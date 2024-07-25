@@ -57,6 +57,8 @@ def _make_one_hot(x, key):
           top_k=50,
           num_oov_buckets=_OOV_SIZE,
           vocab_filename=key, name=key)
+  if key == "Age":
+     print("integerized: ", integerized)
   depth = (
       tft.experimental.get_vocabulary_size_by_name(key) + _OOV_SIZE)
   one_hot_encoded = tf.one_hot(

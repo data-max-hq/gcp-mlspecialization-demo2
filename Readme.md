@@ -227,19 +227,37 @@ The evaluation results are derived from the Evaluator component and provide insi
 
 ## Fairness Analysis
 
-When developing a profit maximization model based on the Black Friday dataset for targeted marketing, it is essential to consider the potential fairness and bias implications. Including purchaser demographics such as age, gender, and city category in the model can lead to biases that disproportionately favor certain groups, resulting in discriminatory marketing practices. This section discusses the implications, methods to detect bias, and strategies to mitigate it.
+The machine learning model developed for predicting purchase amounts on the Black Friday dataset, intended for targeted marketing, inherently includes purchaser demographics such as "Age," "Gender," and "City_Category." While these features can enhance the accuracy of predictions, they also pose potential fairness and bias issues. Specifically, the model may disproportionately favor or disadvantage certain demographic groups, leading to biased marketing strategies.
 
-### Evaluating Model Fairness
+### Fairness Evaluation
 
-To evaluate the fairness of the model, we used the following approach:
+1. What Was Evaluated?
 
-1. Fairness Indicators:
+  - The model's performance was evaluated across different demographic slices, particularly focusing on "Age," "Gender," and "City_Category." Metrics such as Root Mean Squared Error (RMSE) and Mean Absolute Error (MAE) were calculated for each slice to assess the model's accuracy and potential bias.
 
-  - Fairness indicators were included as evaluation metrics to assess the model's performance across different demographic groups. This involved calculating metrics like Root Mean Squared Error (RMSE) separately for each group to identify any disparities in performance.
+2. Why Evaluate These Slices?
 
-2. Comparative Analysis:
+  - Evaluating these demographic slices helps identify if the model performs unevenly across different groups, which is crucial for ensuring fair and unbiased predictions. Uneven performance could indicate that the model is biased towards or against specific demographics, leading to unfair treatment in targeted marketing strategies.
 
-  - The model's performance was evaluated based on splits for gender, city category, and age features. This helped in identifying whether the model's predictions were biased towards any specific demographic group.
+3. Findings:
+
+  - The fairness evaluation revealed that the model's performance was generally consistent across most demographic groups. However, it was found that the model exhibited higher error rates (both RMSE and MAE) for the age groups "0-17" and "55+." These groups were underrepresented in the training data, leading to less accurate predictions for these demographics.
+
+### Mitigating Bias
+
+To address the identified bias against the "0-17" and "55+" age groups, the following steps were implemented:
+
+1. What Was Done?
+  - ***Weight Sampling***: To compensate for the underrepresentation of the "0-17" and "55+" age groups in the training data, weight sampling was applied. This technique assigns higher weights to these underrepresented groups during the training process, ensuring that the model pays more attention to these samples and learns more effectively from them.
+
+2. Why Use Weight Sampling?
+
+  - Weight sampling is a practical method to address data imbalance by giving more importance to underrepresented groups. This helps in reducing the disparity in model performance across different demographic slices, promoting fairness and equity in the model's predictions.
+
+3. How Was It Implemented?
+
+  - The implementation involved adjusting the sample weights during the training process, as illustrated in the following script:
+  
 
 
 
