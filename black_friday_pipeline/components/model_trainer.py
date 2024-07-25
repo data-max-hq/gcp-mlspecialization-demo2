@@ -23,6 +23,17 @@ _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
 _TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
+AGE_GROUP_WEIGHTS = {
+    '0-17': 2.0, # 2x weight for this group
+    '18-25': 1.0,
+    '26-35': 1.0,
+    '36-45': 1.0,
+    '46-50': 1.0,
+    '51-55': 1.0,
+    '55+': 1.5,   # 1.5x weight for this group
+}
+
+
 def _get_tf_examples_serving_signature(model, tf_transform_output):
   """Returns a serving signature that accepts `tensorflow.Example`."""
 
@@ -92,6 +103,20 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
             label_key='Purchase'
         )
         print("Dataset element spec:", dataset.element_spec)
+
+
+        def add_sample_weights(features, label):
+            # Extract the 'Age' feature (or any feature you're weighting by)
+            age = features['Age_xf']
+            # Map the age to the corresponding weight
+            sample_weight = tf.map_fn(
+                lambda x: AGE_GROUP_WEIGHTS.get(x, 1.0),  # Default weight is 1.0 if not found
+                age,
+                dtype=tf.float32
+            )
+            return features, label, sample_weight
+        
+        dataset = dataset.map(add_sample_weights)
 
         return dataset
 

@@ -1,0 +1,33 @@
+Slice: (('Age', '0-17'),)
+  : {'mean_absolute_error': {'doubleValue': 2427.5526919798963}, 'loss': {'doubleValue': 10462085.0}, 'root_mean_squared_error': {'doubleValue': 3234.5146484375}, 'mean_absolute_error_diff': {'doubleValue': -15.569811747348012}, 'loss_diff': {'doubleValue': 220297.0}, 'root_mean_squared_error_diff': {'doubleValue': 34.2353515625}}
+
+Slice: (('Age', '18-25'),)
+  : {'mean_absolute_error': {'doubleValue': 2334.0065759138274}, 'loss': {'doubleValue': 9596405.0}, 'root_mean_squared_error': {'doubleValue': 3097.806396484375}, 'mean_absolute_error_diff': {'doubleValue': -9.013513755315671}, 'loss_diff': {'doubleValue': 83067.0}, 'root_mean_squared_error_diff': {'doubleValue': 13.4365234375}}
+
+Slice: (('Age', '26-35'),)
+  : {'mean_absolute_error': {'doubleValue': 2270.630577894314}, 'loss': {'doubleValue': 9231296.0}, 'root_mean_squared_error': {'doubleValue': 3038.3046875}, 'mean_absolute_error_diff': {'doubleValue': -12.032826450713856}, 'loss_diff': {'doubleValue': 58675.0}, 'root_mean_squared_error_diff': {'doubleValue': 9.671142578125}}
+
+Slice: (('Age', '36-45'),)
+  : {'mean_absolute_error': {'doubleValue': 2086.5929719580554}, 'loss': {'doubleValue': 7850996.5}, 'root_mean_squared_error': {'doubleValue': 2801.962890625}, 'mean_absolute_error_diff': {'doubleValue': -22.148211429432195}, 'loss_diff': {'doubleValue': 9188.5}, 'root_mean_squared_error_diff': {'doubleValue': 1.64013671875}}
+
+Slice: (('Age', '46-50'),)
+  : {'mean_absolute_error': {'doubleValue': 2094.1617070038587}, 'loss': {'doubleValue': 7845567.0}, 'root_mean_squared_error': {'doubleValue': 2800.993896484375}, 'mean_absolute_error_diff': {'doubleValue': -11.547596492965113}, 'loss_diff': {'doubleValue': 27746.0}, 'root_mean_squared_error_diff': {'doubleValue': 4.957275390625}}
+
+Slice: (('Age', '51-55'),)
+  : {'mean_absolute_error': {'doubleValue': 2039.817402309617}, 'loss': {'doubleValue': 7773968.5}, 'root_mean_squared_error': {'doubleValue': 2788.183837890625}, 'mean_absolute_error_diff': {'doubleValue': -38.342309842083296}, 'loss_diff': {'doubleValue': 34385.0}, 'root_mean_squared_error_diff': {'doubleValue': 6.173095703125}}
+
+Slice: (('Age', '55+'),)
+  : {'mean_absolute_error': {'doubleValue': 1983.8780953513447}, 'loss': {'doubleValue': 7368825.0}, 'root_mean_squared_error': {'doubleValue': 2714.557861328125}, 'mean_absolute_error_diff': {'doubleValue': -18.990505116733857}, 'loss_diff': {'doubleValue': 34288.0}, 'root_mean_squared_error_diff': {'doubleValue': 6.32275390625}}
+
+
+City:
+
+Slice: (('City_Category', 'A'),)
+  : {'mean_absolute_error': {'doubleValue': 2258.966268442862}, 'loss': {'doubleValue': 9079542.0}, 'root_mean_squared_error': {'doubleValue': 3013.227783203125}, 'mean_absolute_error_diff': {'doubleValue': -0.020303486271131987}, 'loss_diff': {'doubleValue': 58304.0}, 'root_mean_squared_error_diff': {'doubleValue': 9.690185546875}}
+
+Slice: (('City_Category', 'B'),)
+  : {'mean_absolute_error': {'doubleValue': 2194.030722957701}, 'loss': {'doubleValue': 8581760.0}, 'root_mean_squared_error': {'doubleValue': 2929.464111328125}, 'mean_absolute_error_diff': {'doubleValue': -13.766504080431332}, 'loss_diff': {'doubleValue': 56069.0}, 'root_mean_squared_error_diff': {'doubleValue': 9.58544921875}}
+
+Slice: (('City_Category', 'C'),)
+  : {'mean_absolute_error': {'doubleValue': 2182.475641575482}, 'loss': {'doubleValue': 8748575.0}, 'root_mean_squared_error': {'doubleValue': 2957.799072265625}, 'mean_absolute_error_diff': {'doubleValue': -31.703576637462902}, 'loss_diff': {'doubleValue': 43169.0}, 'root_mean_squared_error_diff': {'doubleValue': 7.306640625}}
+
