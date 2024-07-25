@@ -37,7 +37,7 @@ def _fill_in_missing(x):
   if not isinstance(x, tf.sparse.SparseTensor):
     return x
 
-  default_value = '' if x.dtype == tf.string else -2.0
+  default_value = '' if x.dtype == tf.string else -2
   return tf.squeeze(
       tf.sparse.to_dense(
           tf.SparseTensor(x.indices, x.values, [x.dense_shape[0], 1]),
