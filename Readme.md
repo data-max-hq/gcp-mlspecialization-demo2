@@ -257,8 +257,26 @@ To address the identified bias against the "0-17" and "55+" age groups, the foll
 3. How Was It Implemented?
 
   - The implementation involved adjusting the sample weights during the training process, as illustrated in the following script:
-
-
+```def add_sample_weights(features, label):
+            # Extract the 'Age_xf' one-hot encoded feature
+            age_one_hot = features['Age_xf']
+            
+            # Determine the index of the active age category in the one-hot vector
+            age_index = tf.argmax(age_one_hot, axis=1, output_type=tf.int32)
+            
+            # Apply weights based on conditions
+            sample_weight = tf.where(
+                tf.equal(age_index, AGE_GROUP_INDICES['0-17']),
+                tf.constant(AGE_GROUP_WEIGHTS[0], dtype=tf.float32),
+                tf.where(
+                    tf.equal(age_index, AGE_GROUP_INDICES['55+']),
+                    tf.constant(AGE_GROUP_WEIGHTS[6], dtype=tf.float32),
+                    tf.constant(1.0, dtype=tf.float32)  # Default weight for other groups
+                )
+            )
+            return features, label, sample_weight
+```
+This function is part of the trainer component defined in `black_friday_pipeline/components/model_trainer.py`
 
 ### Conclusion
 The fairness analysis revealed that the model initially exhibited bias against the age groups "0-17" and "55+" due to their underrepresentation in the dataset. By implementing weight sampling, the model's accuracy for these groups improved, leading to fairer and more equitable predictions. This approach ensures that targeted marketing strategies do not disproportionately disadvantage any demographic group, aligning the model's outcomes with ethical standards and promoting customer trust.
