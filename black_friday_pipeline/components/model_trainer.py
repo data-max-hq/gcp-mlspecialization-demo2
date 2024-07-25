@@ -141,7 +141,8 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
     output = tf.keras.layers.Dense(70, activation='relu')(output)
     output = tf.keras.layers.Dense(50, activation='relu')(output)
     output = tf.keras.layers.Dense(20, activation='relu')(output)
-    output = tf.keras.layers.Dense(3, activation='softmax')(output)
+    output = tf.keras.layers.Dense(1)(output)
+
 
     return tf.keras.Model(inputs=inputs, outputs=output)
 

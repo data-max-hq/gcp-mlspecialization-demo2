@@ -37,7 +37,7 @@ def _fill_in_missing(x):
   if not isinstance(x, tf.sparse.SparseTensor):
     return x
 
-  default_value = '' if x.dtype == tf.string else -1
+  default_value = '' if x.dtype == tf.string else -2.0
   return tf.squeeze(
       tf.sparse.to_dense(
           tf.SparseTensor(x.indices, x.values, [x.dense_shape[0], 1]),
@@ -54,7 +54,7 @@ def _make_one_hot(x, key):
     A dense one-hot tensor as a float list
   """
   integerized = tft.compute_and_apply_vocabulary(x,
-          top_k=_VOCAB_SIZE,
+          top_k=50,
           num_oov_buckets=_OOV_SIZE,
           vocab_filename=key, name=key)
   depth = (
@@ -65,38 +65,6 @@ def _make_one_hot(x, key):
       on_value=1.0,
       off_value=0.0)
   return tf.reshape(one_hot_encoded, [-1, depth])
-
-def calculate_quantiles(purchase):
-    # Sort the tensor
-    sorted_purchase = tf.sort(purchase)
-    n = tf.size(sorted_purchase)
-    
-    # Find indices for the 33rd and 66th percentiles
-    idx33 = tf.cast(0.33 * tf.cast(n, tf.float32), tf.int32)
-    idx66 = tf.cast(0.66 * tf.cast(n, tf.float32), tf.int32)
-    
-    # Get the values at those indices
-    q33 = sorted_purchase[idx33]
-    q66 = sorted_purchase[idx66]
-    return q33, q66
-
-def categorize_purchase_dynamic(purchase, q33, q66):
-    # Small spender: label 0
-    small_spender = tf.less(purchase, q33)
-    # Medium spender: label 1
-    medium_spender = tf.logical_and(tf.greater_equal(purchase, q33),
-                                    tf.less(purchase, q66))
-    # Big spender: label 2
-    big_spender = tf.greater_equal(purchase, q66)
-
-    # Convert boolean tensors to integers
-    label = tf.where(small_spender, 0, tf.where(medium_spender, 1, 2))
-    # One-hot encode the labels
-    label = tf.one_hot(label, depth=3)
-    # Remove the extra dimension to match the expected shape
-    label = tf.squeeze(label, axis=1)
-    return tf.cast(label, tf.float32)
-
 
 
 def preprocessing_fn(inputs):
@@ -110,13 +78,7 @@ def preprocessing_fn(inputs):
     for key in _CATEGORICAL_STRING_FEATURES:
        outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
-    # Calculate quantiles
-    q33, q66 = calculate_quantiles(inputs[_LABEL_KEY])
-
-    # Categorize purchase amount
-    outputs[_LABEL_KEY] = categorize_purchase_dynamic(inputs[_LABEL_KEY], q33, q66)
-
-    
+    outputs[_LABEL_KEY] = _fill_in_missing(inputs[_LABEL_KEY])
 
     return outputs
 
