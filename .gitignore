@@ -40,3 +40,7 @@ __MACOSX/
 test_deploy.py
 
 test.py
+
+data_exploration.py
+
+compare_slices.txt

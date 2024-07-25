@@ -257,7 +257,8 @@ To address the identified bias against the "0-17" and "55+" age groups, the foll
 3. How Was It Implemented?
 
   - The implementation involved adjusting the sample weights during the training process, as illustrated in the following script:
-```def add_sample_weights(features, label):
+```
+def add_sample_weights(features, label):
             # Extract the 'Age_xf' one-hot encoded feature
             age_one_hot = features['Age_xf']
             
