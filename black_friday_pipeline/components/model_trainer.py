@@ -108,27 +108,25 @@ def input_fn(file_pattern, tf_transform_output, batch_size=200):
             label_key='Purchase'
         )
         print("Dataset element spec:", dataset.element_spec)
-        
+
         def add_sample_weights(features, label):
             # Extract the 'Age_xf' one-hot encoded feature
             age_one_hot = features['Age_xf']
-
+            
             # Determine the index of the active age category in the one-hot vector
             age_index = tf.argmax(age_one_hot, axis=1, output_type=tf.int32)
-
-            # Define a list of conditions and corresponding weights
-            conditions = [
-                (tf.equal(age_index, AGE_GROUP_INDICES['0-17']), lambda: tf.constant(AGE_GROUP_WEIGHTS[0])),
-                (tf.equal(age_index, AGE_GROUP_INDICES['55+']), lambda: tf.constant(AGE_GROUP_WEIGHTS[6]))
-            ]
-
+            
             # Apply weights based on conditions
-            sample_weight = tf.case(
-                pred_fn_pairs=conditions,
-                default=lambda: tf.constant(1.0),
-                exclusive=True
+            sample_weight = tf.where(
+                tf.equal(age_index, AGE_GROUP_INDICES['0-17']),
+                tf.constant(AGE_GROUP_WEIGHTS[0], dtype=tf.float32),
+                tf.where(
+                    tf.equal(age_index, AGE_GROUP_INDICES['55+']),
+                    tf.constant(AGE_GROUP_WEIGHTS[6], dtype=tf.float32),
+                    tf.constant(1.0, dtype=tf.float32)  # Default weight for other groups
+                )
             )
-
+            
             return features, label, sample_weight
         
         dataset = dataset.map(add_sample_weights)
