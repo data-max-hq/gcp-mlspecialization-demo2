@@ -173,8 +173,8 @@ def run_fn(fn_args):
 
    model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-        loss='categorical_crossentropy',  # Using MSE for regression
-        metrics=['accuracy']  # MAE as an additional metric
+        loss='mean_squared_error',  # Using MSE for regression
+        metrics=['mean_absolute_error']  # MAE as an additional metric
     )
 
    tensorboard_callback = tf.keras.callbacks.TensorBoard(

@@ -31,11 +31,8 @@ eval_config = tfma.EvalConfig(
     metrics_specs=[
         tfma.MetricsSpec(
             metrics=[
-                tfma.MetricConfig(class_name='CategoricalCrossentropy',
-                  threshold=tfma.MetricThreshold(
-                      value_threshold=tfma.GenericValueThreshold(
-                          lower_bound={'value': 0.1}))),
-                tfma.MetricConfig(class_name='FairnessIndicators')                                                    
+                tfma.MetricConfig(class_name='RootMeanSquaredError', threshold=tfma.MetricThreshold(value_threshold=tfma.GenericValueThreshold(upper_bound={'value': 10000}))),
+                tfma.MetricConfig(class_name='MeanAbsoluteError')                                          
                 ])]
     )
 
@@ -43,6 +40,13 @@ eval_config = tfma.EvalConfig(
 vertex_serving_spec = {
       'project_id': project_id,
       'endpoint_name': endpoint_name,
+      # Remaining argument is passed to aiplatform.Model.deploy()
+      # See https://cloud.google.com/vertex-ai/docs/predictions/deploy-model-api#deploy_the_model
+      # for the detail.
+      #
+      # Machine type is the compute resource to serve prediction requests.
+      # See https://cloud.google.com/vertex-ai/docs/predictions/configure-compute#machine-types
+      # for available machine types and acccerators.
       'machine_type': 'n1-standard-2',
   }
 
