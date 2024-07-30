@@ -13,9 +13,6 @@ region = os.getenv("GOOGLE_CLOUD_REGION")
 
 eval_config = tfma.EvalConfig(
     model_specs=[
-        # This assumes a serving model with signature 'serving_default'. If
-        # using estimator based EvalSavedModel, add signature_name: 'eval' and
-        # remove the label_key.
         tfma.ModelSpec(
             signature_name='serving_default',
             label_key='Purchase',
@@ -40,13 +37,6 @@ eval_config = tfma.EvalConfig(
 vertex_serving_spec = {
       'project_id': project_id,
       'endpoint_name': endpoint_name,
-      # Remaining argument is passed to aiplatform.Model.deploy()
-      # See https://cloud.google.com/vertex-ai/docs/predictions/deploy-model-api#deploy_the_model
-      # for the detail.
-      #
-      # Machine type is the compute resource to serve prediction requests.
-      # See https://cloud.google.com/vertex-ai/docs/predictions/configure-compute#machine-types
-      # for available machine types and acccerators.
       'machine_type': 'n1-standard-2',
   }
 

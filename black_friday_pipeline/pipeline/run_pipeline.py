@@ -1,4 +1,3 @@
-# from tfx.orchestration.kubeflow.kubeflow_dag_runner import KubeflowDagRunner, KubeflowDagRunnerConfig
 from tfx import v1 as tfx
 
 from pipeline.pipeline_definition import create_pipeline

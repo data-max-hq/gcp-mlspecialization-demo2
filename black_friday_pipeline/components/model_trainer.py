@@ -21,7 +21,6 @@ GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
 _LABEL_KEY = 'Purchase'
 _FEATURE_KEYS = ["Age","City_Category","Gender","Marital_Status","Occupation","Product_Category_1",'Product_Category_2','Product_Category_3',"Stay_In_Current_City_Years"]
-_TRANSFORM_FEATURE_KEYS = ["Age_xf","City_Category_xf", "Gender_xf", "Marital_Status_xf", "Occupation_xf", "Product_Category_1_xf", "Product_Category_2_xf", "Product_Category_3_xf", "Stay_In_Current_City_Years_xf"]
 
 AGE_GROUP_INDICES = {
     '0-17': 0,
@@ -42,8 +41,6 @@ AGE_GROUP_WEIGHTS = {
 def _get_tf_examples_serving_signature(model, tf_transform_output):
   """Returns a serving signature that accepts `tensorflow.Example`."""
 
-  # We need to track the layers in the model in order to save it.
-  # TODO(b/162357359): Revise once the bug is resolved.
   model.tft_layer_inference = tf_transform_output.transform_features_layer()
 
 
@@ -66,8 +63,6 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
     logging.info('serve_transformed_features = %s', transformed_features)
 
     outputs = model(transformed_features)
-    # TODO(b/154085620): Convert the predicted labels from the model using a
-    # reverse-lookup (opposite of transform.py).
     return {'outputs': outputs}
 
   return serve_tf_examples_fn
@@ -75,8 +70,6 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
 def _get_transform_features_signature(model, tf_transform_output):
   """Returns a serving signature that applies tf.Transform to features."""
 
-  # We need to track the layers in the model in order to save it.
-  # TODO(b/162357359): Revise once the bug is resolved.
   model.tft_layer_eval = tf_transform_output.transform_features_layer()
 
   @tf.function(input_signature=[
@@ -202,12 +195,6 @@ def run_fn(fn_args):
    model = _build_keras_model(tf_transform_output)
 
    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
-
-
-   lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate=1e-1,
-        decay_steps=1000,
-        decay_rate=0.9)
 
    model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
