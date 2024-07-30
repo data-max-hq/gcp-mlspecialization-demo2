@@ -8,10 +8,6 @@ pyenv --version
 pyenv install 3.10.12
 pyenv global 3.10.12
 sudo apt install git
-git clone https://github.com/data-max-hq/gcp-mlspecialization-demo2.git
-cd gcp-mlspecialization-demo2
 python3 -m venv venv
 source venv/bin/activate
-pip install requirements.txt
-cd black_friday_pipeline
-python -m pipeline/run_pipeline
+pip install -r requirements.txt
