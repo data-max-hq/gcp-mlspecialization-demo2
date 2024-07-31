@@ -1,4 +1,39 @@
 # Demo 2
+# Demo 2
+
+## Table of Contents
+1. [Business Goal and Machine Learning Solution](#business-goal-and-machine-learning-solution)
+   - [Business Question/Goal](#business-questiongoal)
+   - [Machine Learning Use Case](#machine-learning-use-case)
+   - [How the Machine Learning Solution Addresses the Business Goal](#how-the-machine-learning-solution-addresses-the-business-goal)
+   - [Top-Line Description](#top-line-description)
+2. [Data Exploration](#data-exploration)
+   - [Data Exploration Process](#data-exploration-process)
+   - [Tools and Techniques Used](#tools-and-techniques-used)
+   - [Type of Data Exploration Performed](#type-of-data-exploration-performed)
+   - [Impact on Data/Model Algorithm/Architecture Decisions](#impact-on-datamodel-algorithmarchitecture-decisions)
+   - [Conclusion](#conclusion)
+3. [Feature Engineering](#feature-engineering)
+   - [Feature Engineering Performed](#feature-engineering-performed)
+   - [Conclusion](#conclusion-1)
+4. [Data Preprocessing and the Data Pipeline](#data-preprocessing-and-the-data-pipeline)
+   - [Data Ingestion](#data-ingestion)
+   - [Data Validation](#data-validation)
+   - [Data Transformation](#data-transformation)
+   - [Callable API for Data Preprocessing](#callable-api-for-data-preprocessing)
+   - [Integration with Production Model](#integration-with-production-model)
+   - [Conclusion](#conclusion-2)
+5. [Machine Learning Model Design and Selection](#machine-learning-model-design-and-selection)
+   - [Machine Learning Model Selection](#machine-learning-model-selection)
+   - [Model Design and Training](#model-design-and-training)
+6. [Machine Learning Model Evaluation](#machine-learning-model-evaluation)
+   - [Evaluation Process](#evaluation-process)
+   - [Evaluation Metrics](#evaluation-metrics)
+   - [Evaluation Results](#evaluation-results)
+7. [Fairness Analysis](#fairness-analysis)
+   - [Fairness Evaluation](#fairness-evaluation)
+   - [Mitigating Bias](#mitigating-bias)
+   - [Conclusion](#conclusion-3)
 
 ## Business goal and machine learning solution
 
@@ -35,7 +70,7 @@ The machine learning solution is designed to provide actionable insights into cu
 ### Top-Line Description
 This demo presents a machine learning solution aimed at predicting customer purchase amounts during Black Friday sales. The solution leverages demographic and behavioral data to build a predictive model that helps businesses enhance their marketing strategies, optimize resource allocation, and ultimately increase profits. By addressing the business question of how to anticipate customer spending, this project demonstrates the value of machine learning in driving business growth and efficiency during high-traffic shopping events.
 
-## Whitepaper Section: Data Exploration
+## Data Exploration
 
 ### Data Exploration Process
 
