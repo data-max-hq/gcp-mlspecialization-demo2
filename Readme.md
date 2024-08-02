@@ -82,7 +82,7 @@ The data exploration process was a critical step in understanding the characteri
 
 ### Tools and Techniques Used
 
-**TensorFlow Data Validation (TFDV):** 
+**TensorFlow Data Validation (TFDV):**
 
 * StatisticGen: This component generated descriptive statistics for the dataset, providing insights into the distribution of values for each feature.
 * SchemaGen: This component inferred the schema of the dataset, which includes information about feature types, domains, and expected values.
@@ -152,7 +152,7 @@ The feature engineering process involved handling missing values, one-hot encodi
 The data preprocessing pipeline is designed to transform raw data into a format suitable for model training and serving. This pipeline ensures that the data is cleaned, transformed, and standardized, making it ready for the machine learning model. The preprocessing steps are encapsulated in a callable API to enable seamless integration with the production environment where the model will be served.
 
 ### Data Ingestion
-The data ingestion step loads the raw data into the pipeline using the CsvExampleGen component. This component reads CSV files and splits the data into training, evaluation, and testing sets. The code snippet for this component is stored in `black_friday_pipeline/components/data_ingestion.py` 
+The data ingestion step loads the raw data into the pipeline using the CsvExampleGen component. This component reads CSV files and splits the data into training, evaluation, and testing sets. The code snippet for this component is stored in `black_friday_pipeline/components/data_ingestion.py`
 
 ### Data Validation
 Data validation is performed using the StatisticsGen, SchemaGen, and ExampleValidator components. These components generate statistics, infer the schema, and validate the dataset against the schema to detect any anomalies or inconsistencies. The code snippet for this component is stored in `black_friday_pipeline/components/data_validation.py`
@@ -223,11 +223,11 @@ The model design and training process involves defining the CNN architecture, co
 
   - TensorBoard callbacks are used to monitor the training process and log metrics for visualization.
 
-The code snippet for model design and training can be found on `black_friday_pipeline/components/model_trainer.py` 
+The code snippet for model design and training can be found on `black_friday_pipeline/components/model_trainer.py`
 
 
 ### Model Evaluation and Pushing
-The evaluation of the trained model is performed using the Evaluator component, which measures the model's performance on the test dataset. The evaluation criteria include metrics such as Root Mean Squared Error (RMSE). The code snippet for model evaluation can be found on `black_friday_pipeline/components/model_evaluator_and_pusher.py` 
+The evaluation of the trained model is performed using the Evaluator component, which measures the model's performance on the test dataset. The evaluation criteria include metrics such as Root Mean Squared Error (RMSE). The code snippet for model evaluation can be found on `black_friday_pipeline/components/model_evaluator_and_pusher.py`
 
 
 
@@ -296,10 +296,10 @@ To address the identified bias against the "0-17" and "55+" age groups, the foll
 def add_sample_weights(features, label):
             # Extract the 'Age_xf' one-hot encoded feature
             age_one_hot = features['Age_xf']
-            
+
             # Determine the index of the active age category in the one-hot vector
             age_index = tf.argmax(age_one_hot, axis=1, output_type=tf.int32)
-            
+
             # Apply weights based on conditions
             sample_weight = tf.where(
                 tf.equal(age_index, AGE_GROUP_INDICES['0-17']),
@@ -318,6 +318,3 @@ This function is part of the trainer component defined in `black_friday_pipeline
 The fairness analysis revealed that the model initially exhibited bias against the age groups "0-17" and "55+" due to their underrepresentation in the dataset. By implementing weight sampling, the model's accuracy for these groups improved, leading to fairer and more equitable predictions. This approach ensures that targeted marketing strategies do not disproportionately disadvantage any demographic group, aligning the model's outcomes with ethical standards and promoting customer trust.
 
 This thorough fairness analysis and mitigation strategy demonstrate a commitment to responsible AI practices, ensuring that the model's deployment in a production environment aligns with ethical and regulatory standards.
-
-
- 

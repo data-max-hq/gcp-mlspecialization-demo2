@@ -1,11 +1,11 @@
+import os
 from typing import Dict, List, Union
+
+import dotenv
+import tensorflow as tf
 from google.cloud import aiplatform
 from google.protobuf import json_format
 from google.protobuf.struct_pb2 import Value
-import tensorflow as tf
-import dotenv
-import os
-
 
 dotenv.load_dotenv()
 
@@ -15,22 +15,48 @@ GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 ENDPOINT_ID = os.getenv("ENDPOINT_ID")
 API_ENDPOINT = os.getenv("API_ENDPOINT")
 
+
 def serialize_example(input_data):
     feature = {
-        'Age': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Age'].encode()])),
-        'City_Category': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['City_Category'].encode()])),
-        'Gender': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Gender'].encode()])),
-        'Marital_Status': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Marital_Status']])),
-        'Occupation': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Occupation']])),
-        'Product_Category_1': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_1']])),
-        'Product_Category_2': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_2']])),
-        'Product_Category_3': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['Product_Category_3']])),
-        'Stay_In_Current_City_Years': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Stay_In_Current_City_Years'].encode()])),
-        'Product_ID': tf.train.Feature(bytes_list=tf.train.BytesList(value=[input_data['Product_ID'].encode()])),
-        'User_ID': tf.train.Feature(int64_list=tf.train.Int64List(value=[input_data['User_ID']]))
+        "Age": tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[input_data["Age"].encode()])
+        ),
+        "City_Category": tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[input_data["City_Category"].encode()])
+        ),
+        "Gender": tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[input_data["Gender"].encode()])
+        ),
+        "Marital_Status": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["Marital_Status"]])
+        ),
+        "Occupation": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["Occupation"]])
+        ),
+        "Product_Category_1": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["Product_Category_1"]])
+        ),
+        "Product_Category_2": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["Product_Category_2"]])
+        ),
+        "Product_Category_3": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["Product_Category_3"]])
+        ),
+        "Stay_In_Current_City_Years": tf.train.Feature(
+            bytes_list=tf.train.BytesList(
+                value=[input_data["Stay_In_Current_City_Years"].encode()]
+            )
+        ),
+        "Product_ID": tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[input_data["Product_ID"].encode()])
+        ),
+        "User_ID": tf.train.Feature(
+            int64_list=tf.train.Int64List(value=[input_data["User_ID"]])
+        ),
     }
     example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
     return example_proto.SerializeToString()
+
 
 def predict_custom_trained_model_sample(
     project: str,
@@ -65,6 +91,7 @@ def predict_custom_trained_model_sample(
     for prediction in predictions:
         print(" prediction:", prediction)
 
+
 # Example usage
 project = GOOGLE_CLOUD_PROJECT
 endpoint_id = ENDPOINT_ID
@@ -72,32 +99,27 @@ location = GOOGLE_CLOUD_REGION
 api_endpoint = API_ENDPOINT
 
 input_data = {
-    'Age': "26",
-    'City_Category': 'A',
-    'Gender': 'M',
-    'Marital_Status': 0,
-    'Occupation': 4,
-    'Product_Category_1': 3,
-    'Product_Category_2': 5,
-    'Product_Category_3': 0,
-    'Stay_In_Current_City_Years': '2',
-    'Product_ID': 'P00248942',
-    'User_ID': 1000001
+    "Age": "26",
+    "City_Category": "A",
+    "Gender": "M",
+    "Marital_Status": 0,
+    "Occupation": 4,
+    "Product_Category_1": 3,
+    "Product_Category_2": 5,
+    "Product_Category_3": 0,
+    "Stay_In_Current_City_Years": "2",
+    "Product_ID": "P00248942",
+    "User_ID": 1000001,
 }
 
 serialized_example = serialize_example(input_data)
 
-encoded_example = tf.io.encode_base64(serialized_example).numpy().decode('utf-8')
-
+encoded_example = tf.io.encode_base64(serialized_example).numpy().decode("utf-8")
 
 
 predict_custom_trained_model_sample(
     project="908149789490",
     endpoint_id=ENDPOINT_ID,
     location=GOOGLE_CLOUD_REGION,
-    instances={"examples":{"b64": encoded_example}}
+    instances={"examples": {"b64": encoded_example}},
 )
-
-
-
-
