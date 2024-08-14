@@ -4,6 +4,9 @@ We, Data Max, hereby certify that the code contained within this repository has 
 Date: August 14, 2024
 
 Certified by:
+
 Name: Sadik Bakiu
+
 Title: Managing Director
+
 Organization: Data Max
