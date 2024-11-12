@@ -1,4 +1,3 @@
-```markdown
 ## Creating a Google Cloud Storage Bucket, "Directories," and a VM with Full API Access
 
 This guide outlines how to create a Google Cloud Storage bucket with a simulated directory structure, and a VM with full API access, all within Cloud Shell.
