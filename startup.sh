@@ -47,5 +47,5 @@ cd black_friday_pipeline
 # Submit the pipeline script
 echo "Submitting the pipeline script..."
 python -m pipeline.pipeline_definition
-python -m pipeline.pipeline_submit
+python -m pipeline.submit_pipeline
 echo "Setup and execution completed for GCP ML Specialization Demo."
