@@ -1,35 +1,123 @@
-# Initialize and Run the Vertex AI TFX Pipeline
+```markdown
+## Creating a Google Cloud Storage Bucket, "Directories," and a VM with Full API Access
 
-This guide will help you initialize and run the Vertex AI TFX pipeline for the Demo 2. Please ensure you have set up your GCP account with the necessary permissions before proceeding.
+This guide outlines how to create a Google Cloud Storage bucket with a simulated directory structure, and a VM with full API access, all within Cloud Shell.
 
-## Steps to Initialize and Run the Pipeline
+**1. Creating a Bucket in Cloud Shell:**
 
-1.  Run `startup.sh`
-
-The startup.sh script performs the following actions:
-
-  - Installs pyenv to manage Python versions.
-  - Sets the required Python version for the project.
-  - Creates a virtual environment (venv).
-  - Installs all required Python packages specified in the requirements.txt file.
-
-```
-bash startup.sh
+```bash
+gsutil mb -l <REGION> gs://<YOUR_BUCKET_NAME>
 ```
 
-2. Define the Pipeline
-Run the pipeline_definition.py script to define the pipeline components and structure. This script sets up the necessary TFX components such as data ingestion, data transformation, model training, evaluation, and deployment.
+* Replace `<REGION>` with the desired region for your bucket (e.g., `us-central1`).
+* Replace `<YOUR_BUCKET_NAME>` with a globally unique name.
 
-```
-python black_friday_pipeline/pipeline/pipeline_definition.py
-```
+**Example:**
 
-3. Submit and Run the Pipeline on Vertex AI
-After defining the pipeline, submit it to Vertex AI for execution using the pipeline_submit.py script. This script uploads the pipeline components to Google Cloud Storage and triggers the execution on Vertex AI.
-```
-python black_friday_pipeline/pipeline/pipeline_submit.py
+```bash
+gsutil mb -l us-central1 gs://black_friday_pipeline
 ```
 
+**1.1 Creating "Directories" (Using Object Prefixes):**
 
-## Monitoring and Logs
-You can monitor the progress and logs of your pipeline run through the Vertex AI console on GCP. Navigate to the Vertex AI section and select Pipelines to see the status and details of your pipeline runs.
+```bash
+touch dummy.txt
+
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_module/taxi_chicago_pipeline/
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/taxi_chicago_pipeline/
+
+rm dummy.txt
+```
+
+```bash
+touch dummy.txt
+
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_module/taxi_chicago_pipeline/
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/taxi_chicago_pipeline/
+
+rm dummy.txt
+```
+
+**Example:**
+
+```bash
+gsutil mkdir gs://black_friday_pipeline/pipeline_module/taxi_chicago_pipeline/
+gsutil mkdir gs://black_friday_pipeline/pipeline_root/taxi_chicago_pipeline/
+```
+
+
+**2. Creating a VM with Full API Access in Cloud Shell:**
+
+```bash
+gcloud compute instances create <VM_NAME> \
+    --zone=<ZONE> \
+    --machine-type=e2-medium \
+    --image-family=debian-12 \
+    --image-project=debian-cloud \
+    --boot-disk-size=20GB \
+    --scopes=cloud-platform
+```
+
+* Replace `<VM_NAME>` with the desired name for your VM.
+* Replace `<ZONE>` with the desired zone.
+
+
+**Example:**
+
+```bash
+gcloud compute instances create my-debian-vm \
+    --zone=europe-west3-a \
+    --machine-type=e2-medium \
+    --image-family=debian-12 \
+    --image-project=debian-cloud \
+    --boot-disk-size=20GB \
+    --scopes=cloud-platform
+```
+
+### 3. Script Initialization Guide
+
+This section covers steps to initialize the script for the GCP ML Specialization Demo, setting up the environment by cloning and running a repository script.
+
+#### Prerequisites
+
+Ensure `sudo` privileges are enabled on your system.
+
+#### Steps
+
+1. **Install Git**
+
+   Ensure Git is installed:
+
+   ```bash
+   sudo apt update
+   sudo apt install -y git
+   ```
+
+2. **Clone the GitHub Repository**
+
+   Clone the repository for the GCP ML Specialization Demo:
+
+   ```bash
+   git clone https://github.com/data-max-hq/gcp-mlspecialization-demo2.git
+   ```
+
+3. **Run the Initialization Script**
+
+   Navigate to the cloned repository and run the startup script:
+
+   ```bash
+   cd gcp-mlspecialization-demo2
+   chmod +x startup.sh
+   sudo ./startup.sh
+   ```
+
+---
+
+### Key Considerations and Best Practices
+
+* **Service Account**: For better security, use a service account with limited permissions instead of the `cloud-platform` scope in production environments.
+* **Firewall Rules**: Configure firewall rules according to your application requirements.
+* **Region and Zone Selection**: Choose these strategically based on latency, availability, and cost needs.
+* **Cleanup**: Remember to delete the VM and bucket after finishing to avoid unnecessary charges.
+
+Following these steps will set up your GCP environment and initialize the GCP ML Specialization Demo. If you encounter any issues, please refer to the repository's documentation.
