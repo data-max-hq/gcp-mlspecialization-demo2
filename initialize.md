@@ -28,15 +28,6 @@ gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/taxi_chicago_pipeline/
 rm dummy.txt
 ```
 
-```bash
-touch dummy.txt
-
-gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_module/taxi_chicago_pipeline/
-gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/taxi_chicago_pipeline/
-
-rm dummy.txt
-```
-
 **Example:**
 
 ```bash
