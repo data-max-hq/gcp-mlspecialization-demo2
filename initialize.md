@@ -22,8 +22,8 @@ gsutil mb -l us-central1 gs://black_friday_pipeline
 ```bash
 touch dummy.txt
 
-gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_module/taxi_chicago_pipeline/
-gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/taxi_chicago_pipeline/
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_module/black_friday_pipeline/
+gsutil cp dummy.txt gs://<YOUR_BUCKET_NAME>/pipeline_root/black_friday_pipeline/
 
 rm dummy.txt
 ```
@@ -31,8 +31,8 @@ rm dummy.txt
 **Example:**
 
 ```bash
-gsutil mkdir gs://black_friday_pipeline/pipeline_module/taxi_chicago_pipeline/
-gsutil mkdir gs://black_friday_pipeline/pipeline_root/taxi_chicago_pipeline/
+gsutil mkdir gs://black_friday_pipeline/pipeline_module/black_friday_pipeline/
+gsutil mkdir gs://black_friday_pipeline/pipeline_root/black_friday_pipeline/
 ```
 
 
