@@ -1,5 +1,4 @@
 # Demo 2
-# Demo 2
 
 ## Table of Contents
 1. [Business Goal and Machine Learning Solution](#business-goal-and-machine-learning-solution)
