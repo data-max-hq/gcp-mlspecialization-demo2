@@ -111,7 +111,7 @@ Applied one-hot encoding to categorical features to facilitate their use in the 
 
 **Model Architecture:**
 
-CNN model architectures.
+DNN model architectures.
 
 ### Conclusion
 The data exploration process provided a foundational understanding of the dataset and informed critical decisions regarding data preprocessing and model architecture. By leveraging TFDV and the TFX pipeline components, we ensured that the dataset was thoroughly analyzed and preprocessed, leading to a robust and effective machine learning solution.
@@ -166,36 +166,36 @@ The data preprocessing pipeline involves multiple steps, including data ingestio
 ## Machine Learning Model Design and Selection
 
 ### Machine Learning Model Selection
-For this project, we selected a Convolutional Neural Network (CNN) model for predicting the purchase amounts during Black Friday sales. The decision to use a CNN model was based on several criteria aimed at achieving high accuracy and robustness in predictions.
+For this project, we selected a Dense Neural Network (DNN) model for predicting the purchase amounts during Black Friday sales. The decision to use a DNN model was based on several criteria aimed at achieving high accuracy and robustness in predictions.
 
 #### Criteria for Model Selection
 
 1. Data Characteristics:
 
-- The dataset contains various categorical and numerical features that can benefit from the hierarchical feature extraction capabilities of CNNs.
+- The dataset contains various categorical and numerical features that can benefit from the hierarchical feature extraction capabilities of DNNs.
 
 2. Predictive Performance:
 
-- CNNs are known for their ability to capture complex patterns and interactions in the data, which is essential for accurately predicting purchase amounts.
+- DNNs are known for their ability to capture complex patterns and interactions in the data, which is essential for accurately predicting purchase amounts.
 
 3. Scalability:
 
-- The model needs to handle large volumes of data efficiently. CNNs, with their parallel processing capabilities, are well-suited for this requirement.
+- The model needs to handle large volumes of data efficiently. DNNs, with their parallel processing capabilities, are well-suited for this requirement.
 
 4. Previous Success:
 
-- CNNs have been successfully applied in similar use cases, providing a strong justification for their selection in this project.
+- DNNs have been successfully applied in similar use cases, providing a strong justification for their selection in this project.
 
 5. Ease of Integration:
 
 - The model should be easily integrable into the existing TFX pipeline, allowing for seamless data preprocessing, training, evaluation, and serving.
 
 ### Model Design and Training
-The model design and training process involves defining the CNN architecture, compiling the model, and training it using the transformed dataset. Key aspects of the training process include:
+The model design and training process involves defining the DNN architecture, compiling the model, and training it using the transformed dataset. Key aspects of the training process include:
 
 1.  Model Architecture:
 
-  - The CNN model consists of multiple dense layers to capture the complex relationships between the input features.
+  - The DNN model consists of multiple dense layers to capture the complex relationships between the input features.
   - Input layers are created based on the transformed feature specifications.
   - Dense layers with ReLU activation functions are used to introduce non-linearity and learn complex patterns.
   - The output layer is a single neuron that predicts the purchase amount.
