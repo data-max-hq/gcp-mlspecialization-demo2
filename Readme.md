@@ -73,10 +73,6 @@ This demo presents a machine learning solution aimed at predicting customer purc
 
 ### Data Exploration Process
 
-
-Memory updated
-Whitepaper Section: Data Exploration
-Data Exploration Process
 The data exploration process was a critical step in understanding the characteristics of the dataset and making informed decisions about the data preprocessing and model architecture. The exploration was performed using the tensorflow_data_validation (TFDV) library in conjunction with the StatisticGen, SchemaGen, and ExampleValidator components of the TensorFlow Extended (TFX) pipeline. These tools provided comprehensive insights into the dataset's statistics, schema, and potential anomalies
 
 ### Tools and Techniques Used
