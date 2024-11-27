@@ -111,8 +111,7 @@ Applied one-hot encoding to categorical features to facilitate their use in the 
 
 **Model Architecture:**
 
-Chose algorithms and model architectures that can effectively handle the normalized and encoded features.
-Ensured that the model can accommodate the processed data format, leading to better performance and accuracy.
+CNN model architectures.
 
 ### Conclusion
 The data exploration process provided a foundational understanding of the dataset and informed critical decisions regarding data preprocessing and model architecture. By leveraging TFDV and the TFX pipeline components, we ensured that the dataset was thoroughly analyzed and preprocessed, leading to a robust and effective machine learning solution.
