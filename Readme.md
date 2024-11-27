@@ -41,16 +41,16 @@ The primary business question being addressed in this project is: "How can we pr
 
 ### Machine Learning Use Case
 The machine learning use case for this project involves developing a predictive model that estimates the purchase amount for each customer based on a set of features. These features include:
+* Age
+* City Category
+* Gender
+* Marital Status
+* Occupation
+* Product Category 1
+* Product Category 2
+* Product Category 3
+* Stay in Current City Years
 
-### Age
-City Category
-Gender
-Marital Status
-Occupation
-Product Category 1
-Product Category 2
-Product Category 3
-Stay in Current City Years
 By analyzing these features, the model aims to predict the purchase amount each customer is likely to spend during the Black Friday sales.
 
 ### How the Machine Learning Solution Addresses the Business Goal
