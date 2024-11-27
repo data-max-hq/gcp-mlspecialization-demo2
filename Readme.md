@@ -252,6 +252,9 @@ The evaluation process involves several steps:
 The primary evaluation metric for this project is Root Mean Squared Error (RMSE). RMSE measures the average magnitude of the errors between the predicted and actual purchase amounts, providing a clear indication of the model's predictive accuracy.
 
 ### Evaluation Results
+
+![Eval Results](Demo2Eval.jpg?raw=true "Eval Results")
+
 The evaluation results are derived from the Evaluator component and provide insights into how well the model performs on the independent test dataset. The key metric, RMSE, is used to measure the prediction accuracy. If the model has a better result in the key metric that the one defined on the threshold, the Evaluator "blesses" the model and the Pusher component registers and deployes it in an Vertex AI endpoint. The code for the Evaluator and Pusher are stored in `black_friday_pipeline/components/model_evaluator_and_pusher.py`.
 
 ## Fairness Analysis
