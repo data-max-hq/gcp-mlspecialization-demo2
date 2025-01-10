@@ -315,3 +315,6 @@ This function is part of the trainer component defined in `black_friday_pipeline
 The fairness analysis revealed that the model initially exhibited bias against the age groups "0-17" and "55+" due to their underrepresentation in the dataset. By implementing weight sampling, the model's accuracy for these groups improved, leading to fairer and more equitable predictions. This approach ensures that targeted marketing strategies do not disproportionately disadvantage any demographic group, aligning the model's outcomes with ethical standards and promoting customer trust.
 
 This thorough fairness analysis and mitigation strategy demonstrate a commitment to responsible AI practices, ensuring that the model's deployment in a production environment aligns with ethical and regulatory standards.
+
+
+Made with ❤️ by [datamax.ai](https://www.datamax.ai/).
